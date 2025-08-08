@@ -63,7 +63,7 @@ df_extended_10d_new_HR <- df_extended_10d %>%
   filter(if_all(everything(), ~ !is.na(.))) %>%
   ungroup()
 
-saveRDS(df_extended_10d_new_HR, file = "C:/Users/nc1115/Documents/github/ivRmectin/2.ivm-stagger-distr/output/HR_10d_stagger.rds")
+saveRDS(df_extended_10d_new_HR, file = "2.ivm-stagger-distr/1.staggered-HRs/output/HR_10d_stagger.rds")
 
 
 #for the 21d strategy
@@ -116,7 +116,7 @@ df_extended_20d_new_HR <- df_extended_20d %>%
          stagger = "20d") %>%
   filter(if_all(everything(), ~ !is.na(.))) %>%
   ungroup()
-saveRDS(df_extended_20d_new_HR, file = "C:/Users/nc1115/Documents/github/ivRmectin/2.ivm-stagger-distr/output/HR_20d_stagger.rds")
+saveRDS(df_extended_20d_new_HR, file = "2.ivm-stagger-distr/1.staggered-HRs/output/HR_20d_stagger.rds")
 
 
 #HR_all <- rbind(df_extended_10d_new_HR, df_extended_20d_new_HR)
@@ -134,7 +134,7 @@ df_all <-df_extended_10d_new_HR %>%
   mutate(
     prop_pop_cov = sum(c_across(HR_use_above1) > 1)/1)
 
-saveRDS(df_all, file = "C:/Users/nc1115/Documents/github/ivRmectin/2.ivm-stagger-distr/output/HR_overnight.rds")
+saveRDS(df_all, file = "2.ivm-stagger-distr/1.staggered-HRs/output/HR_overnight.rds")
 
 plot(df_all$Day[1:23], df_all$HR_use_above1[1:23]) #these will be inputs for all in one modelling (just 1 month)
 
@@ -149,3 +149,57 @@ df_all$HR_use_above1[31:53] == df_all$HR_use_above1[61:83]
 df_all$prop_pop_cov[1:23] ==  df_all$prop_pop_cov[31:53]
 df_all$prop_pop_cov[1:23] ==  df_all$prop_pop_cov[61:83]
 df_all$prop_pop_cov[31:53] == df_all$prop_pop_cov[61:83]
+
+df_all_HR <- df_all %>%
+  mutate(
+    group2 = NA,
+    group3 = NA,
+    group1 = HR_use_above1)
+
+df_all_HR$IVM_300_3_HS <- df_extended_10d_new_HR$IVM_300_3_HS
+
+df_all_HR <- df_all_HR %>%
+  select(Day, IVM_300_3_HS, group1, group2, group3, HR_use_above1, prop_pop_cov,stagger)
+
+
+HR_all <- do.call("rbind", list(df_extended_10d_new_HR, df_extended_20d_new_HR, df_all_HR))
+
+
+head(HR_all)
+
+HR_all_long <- HR_all %>%
+  pivot_longer(cols = c(group1, group2, group3, HR_use_above1), names_to = "group",
+               values_to = "HR") %>%
+  mutate(group_lab = case_when(group == "HR_use_above1" ~ "average",
+                               TRUE ~ "group-level"),
+         group_combo = paste0(group_lab))
+
+#quick viz
+HR_plot <- ggplot(HR_all_long, aes(x = Day, y = HR, group = group))+
+  geom_line(aes(col = as.factor(group), lty = as.factor(group_lab)),size = 1.1,
+            inherit.aes = TRUE)+
+  geom_point(size = 2,aes(col = as.factor(group)), alpha = 0.5)+
+  facet_wrap(vars(stagger), labeller = label_both)+
+  theme_bw()+
+  geom_hline(aes(yintercept = 1), lty = "dashed")+
+  ylim(1, 10)+
+  scale_colour_manual(values = c(
+    "group1" = "#1b9e77",
+    "group2" = "#d95f02",
+    "group3" = "#7570b3",
+    "HR_use_above1" = "black"), labels= c("Group 1", "Group 2", "Group 3", "Group average"),
+    name = "Hazard ratio group"
+  )+
+  labs(linetype = "Average or group-level", y = "Hazard ratio")+
+  ggtitle("HR and distribution strategy")
+
+
+time_cov_plot <- ggplot(HR_all, aes(x = Day, y = prop_pop_cov))+
+  geom_line()+
+  facet_wrap(vars(stagger), labeller = label_both)+
+  ylab("Proportion of treated group with lethal dose of ivermectin (HR> 1)")+
+  theme_bw()+
+  ylim(0,1)
+
+write_rds(HR_all_long, file = "2.ivm-stagger-distr/1.staggered-HRs/output/HR_staggered.rds") #staggered HR for all distribution strategies
+write_rds(HR_all, file = "2.ivm-stagger-distr/1.staggered-HRs/output/prop_lethal_ivm.rds") #prop cov group with HR > 1
