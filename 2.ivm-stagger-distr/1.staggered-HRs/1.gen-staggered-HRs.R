@@ -63,7 +63,7 @@ df_extended_10d_new_HR <- df_extended_10d %>%
   filter(if_all(everything(), ~ !is.na(.))) %>%
   ungroup()
 
-saveRDS(df_extended_10d_new_HR, file = "2.ivm-stagger-distr/1.staggered-HRs/output/HR_10d_stagger.rds")
+saveRDS(df_extended_10d_new_HR, file = "2.ivm-stagger-distr/output/HR_10d_stagger.rds")
 
 
 #for the 21d strategy
@@ -116,7 +116,7 @@ df_extended_20d_new_HR <- df_extended_20d %>%
          stagger = "20d") %>%
   filter(if_all(everything(), ~ !is.na(.))) %>%
   ungroup()
-saveRDS(df_extended_20d_new_HR, file = "2.ivm-stagger-distr/1.staggered-HRs/output/HR_20d_stagger.rds")
+saveRDS(df_extended_20d_new_HR, file = "2.ivm-stagger-distr/output/HR_20d_stagger.rds")
 
 
 #HR_all <- rbind(df_extended_10d_new_HR, df_extended_20d_new_HR)
@@ -134,7 +134,7 @@ df_all <-df_extended_10d_new_HR %>%
   mutate(
     prop_pop_cov = sum(c_across(HR_use_above1) > 1)/1)
 
-saveRDS(df_all, file = "2.ivm-stagger-distr/1.staggered-HRs/output/HR_overnight.rds")
+saveRDS(df_all, file = "2.ivm-stagger-distr/output/HR_overnight.rds")
 
 plot(df_all$Day[1:23], df_all$HR_use_above1[1:23]) #these will be inputs for all in one modelling (just 1 month)
 
@@ -201,5 +201,5 @@ time_cov_plot <- ggplot(HR_all, aes(x = Day, y = prop_pop_cov))+
   theme_bw()+
   ylim(0,1)
 
-write_rds(HR_all_long, file = "2.ivm-stagger-distr/1.staggered-HRs/output/HR_staggered.rds") #staggered HR for all distribution strategies
-write_rds(HR_all, file = "2.ivm-stagger-distr/1.staggered-HRs/output/prop_lethal_ivm.rds") #prop cov group with HR > 1
+write_rds(HR_all_long, file = "2.ivm-stagger-distr/output/HR_staggered.rds") #staggered HR for all distribution strategies
+write_rds(HR_all, file = "2.ivm-stagger-distr/output/prop_lethal_ivm.rds") #prop cov group with HR > 1
