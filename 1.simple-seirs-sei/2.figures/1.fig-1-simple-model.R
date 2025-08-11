@@ -6,7 +6,7 @@ df_1_emerge_T <- readRDS("1.simple-seirs-sei/output/model_results_base_df_consta
 df_2_emerge_T <- readRDS("1.simple-seirs-sei/output/model_results_df_constant_emergence_TRUE.rds") #int constant emergence T
 
 df_3_emerge_F <- readRDS("1.simple-seirs-sei/output/model_results_base_df_carrying_capacity.rds") #baseline carrying capacity
-df_4_emerge_F <- readRDS("2.simple-seirs-sei/output/model_results_df_carrying_capacity.rds") #int carrying capacity
+df_4_emerge_F <- readRDS("1.simple-seirs-sei/output/model_results_df_carrying_capacity.rds") #int carrying capacity
 
 df_1_emerge_T <- df_1_emerge_T %>%
   select(-label) %>%
@@ -64,7 +64,7 @@ scenario_pals2 <- c('#e7298a', scenario_pals) #baseline colour
 mosq_killed_plot <- ggplot(df_all_main, aes(x = t-start_int, y = D, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
   geom_line(linewidth = 0.9)+
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
-  theme_bw()+
+  theme_bw(base_size = 14)+
   theme(
     text = element_text(size = 14))+
   guides(col = "none", lty = "none")+
@@ -79,7 +79,7 @@ mosq_killed_plot <- ggplot(df_all_main, aes(x = t-start_int, y = D, col = as.fac
 daily_inc_plot <- ggplot(df_all_main, aes(x = t-start_int, y = C_daily, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
   geom_line(linewidth = 0.9)+
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
-  theme_bw()+
+  theme_bw(base_size = 14)+
   theme(legend.position = c(0.8, 0.5),
         text = element_text(size = 14))+
   guides(col = "none", linetype = "none")+
@@ -94,7 +94,7 @@ daily_inc_plot <- ggplot(df_all_main, aes(x = t-start_int, y = C_daily, col = as
 prevalence_plot <- ggplot(df_all_main, aes(x = t-start_int, y = (I_h/N)*100, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
   geom_line(linewidth = 0.9)+
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
-  theme_bw()+
+  theme_bw(base_size = 14)+
   theme(
     text = element_text(size = 14))+
   ylab("Prevalence(%) in humans")+
@@ -111,7 +111,7 @@ prevalence_plot <- ggplot(df_all_main, aes(x = t-start_int, y = (I_h/N)*100, col
 mosq_pop_plot <- ggplot(df_all_main, aes(x = t-start_int, y = M, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
   geom_line(linewidth = 0.9)+
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
-  theme_bw()+
+  theme_bw(base_size = 14)+
   theme(
     text = element_text(size = 14))+
   ylab("Mosquito population size")+
@@ -131,7 +131,7 @@ df_all_main %>%
 Re_t_plot <- ggplot(df_all_main, aes(x = t-start_int, y = Re_t, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
   geom_line(linewidth = 0.9)+
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
-  theme_bw()+
+  theme_bw(base_size = 14)+
   #theme(legend.position = c(0.7, 0.3))+
   ylab("Effective reproduction number (Re,t)")+
   guides(col = "none", linetype = "none")+
@@ -196,7 +196,7 @@ summary_impact <- left_join(model_int_summary, model_base_epi) %>% #at each time
 impact_plot <- ggplot(summary_impact, aes(x = factor(time_period, levels = c("10d", "30d", "90d", "250d")), y = log(rel_diff_cases+1), fill = as.factor(delta_t)))+
   geom_bar(stat = "identity", position = position_dodge())+
   facet_wrap(vars(constant_emergence))+
-  theme_minimal()+
+  theme_bw(base_size = 14)+
   #ylim(0,4)+
   scale_y_continuous(limits = c(0,4), labels = c(0, 10, 20, 30, 40))+
   ylab("Efficacy (%)")+
@@ -229,6 +229,7 @@ impact_plot_main <- ggplot(summary_impact,
   xlab("Time period over (days) which incidence measured since intervention start") +
   labs(fill = "Time to complete MDA (days)",
        pattern = "Adult emergence") +
+  theme_bw(base_size = 14)+
   theme(legend.position = c(0.8, 0.9),
         text = element_text(size = 14)) +
   scale_fill_manual(values = scenario_pals) +
