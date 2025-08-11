@@ -326,4 +326,6 @@ dynamics_seasonal <- cowplot::plot_grid(mv_plot, eir_plot, prev_plot, inc_plot,
 plot_seasonal <- cowplot::plot_grid(dynamics_seasonal, impact_main_plot,
                                     labels = c("", "E"))
 
+
+
 ggsave(plot_seasonal, file = "2.ivm-stagger-distr/plots/fig_5_plot_seasonal_late.pdf")
