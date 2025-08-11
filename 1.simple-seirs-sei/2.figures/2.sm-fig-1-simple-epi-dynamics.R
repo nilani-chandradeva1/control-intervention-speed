@@ -66,7 +66,7 @@ inf_mosq <- ggplot(df_all_main, aes(x = t-start_int, y = (I_v/M)*100, col = as.f
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
   theme_bw()+
   theme(
-    text = element_text(size = 14))+
+    text = base(size = 14))+
   guides(col = "none", lty = "none")+
   labs(col = "Duration of killing (days)")+
   ylab("Infectious vectors (%)")+
@@ -81,8 +81,9 @@ susceptible_people <- ggplot(df_all_main, aes(x = t-start_int, y = (S_h/N)*100, 
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
   theme_bw()+
   theme(
-    text = element_text(size = 14))+
-  guides(col = "none", lty = "none")+
+    text = element_text(size = 14),
+    legend.position = c(0.9, 0.6))+
+  #guides(col = "none", lty = "none")+
   labs(col = "Duration of killing (days)")+
   ylab("Susceptible humans (%)")+
   scale_linetype_manual(name = "Adult emergence", labels = c("Carrying capacity", "Constant emergence"),
