@@ -4,7 +4,9 @@
 # ivRmectin <img src="man/Figures/ivRmectin_logo.PNG" align="right" height="138.5" />
 
 ## Killing me softly or swiftly? Modelling the impact of fast vs. staggered distributions of vector control interventions on malaria transmission dynamics. 
+
 Authors: Nilani Chandradeva*, Andrew C. Glover, Charles Whittaker, Joseph D. Challenger, Hannah C. Slater**, Ellie Sherrard-Smith** & Thomas S. Churcher**
+
 Corresponding author*: Nilani Chandradeva (nilani.chandradeva@gmail.com)
 **: Joint senior authors
 
