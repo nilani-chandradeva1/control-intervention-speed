@@ -313,11 +313,8 @@ df_distr_wide_setting_baseline <- df_distr_all %>%
       pivot_wider(names_from = model_type, values_from = clin_inc0to5)
   })
 
-
 df_distr_wide_setting <- left_join(df_distr_wide_setting_ivm,df_distr_wide_setting_baseline, by = c("ref",
                                                                                                     "t",
-
-
                                                                                                     "init_EIR"))
 unique(df_distr_all$model_type)
 
