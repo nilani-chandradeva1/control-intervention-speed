@@ -45,7 +45,28 @@ time_toxic_plot <- ggplot(stag_cov, aes(x = Day, y = prop_pop_cov))+
   xlim(-10, 107)+
   xlab("")
 
-#cowplot::plot_grid(HR_plot, time_toxic_plot, nrow = 2)
+
+
+#read in one of the model runs to get correct coverage
+df_distr_all <- readRDS("2.ivm-stagger-distr/output/df_distr_HR_3m_perennial.rds")
+df_distr_all %>%
+  filter(t == 1) %>% #EIR at t = 1 0.00407 or 0.203
+  group_by(ref) %>%
+  summarise(eir = EIRout) %>%
+  distinct()  #so ref 1-3 is low EIR and 4-6 is high
+
+#match to the initial EIR passed into the model
+df_distr_all <- df_distr_all %>%
+  mutate(init_EIR = case_when(ref <= 3 ~ 2,
+                              TRUE ~ 100)) %>%
+  filter(model_type != "all-in-one")
+covs <- unique(df_distr_all$ivm_cov_par)
+
+df_distr <- df_distr_all %>%
+  filter(init_EIR == 100)
+
+
+
 
 df_time_covs <- df_distr %>%
   #select(t, ivm_cov, model_type) %>%
@@ -69,6 +90,7 @@ facet_labels2 <- c(
   "20d-stagger" = "20-day staggered MDA",
   "all-in-one-stag" = "Overnight MDA"
 )
+start <- (365*5)+200
 
 time_var_cov_plot <- ggplot(df_time_covs_plot, aes(x = t-start, y = ivm_cov*100))+
   geom_line(size = 1.1)+
@@ -82,5 +104,6 @@ time_var_cov_plot <- ggplot(df_time_covs_plot, aes(x = t-start, y = ivm_cov*100)
 toxic_ivm_plot <- cowplot::plot_grid(HR_plot, time_toxic_plot, time_var_cov_plot,
                                      nrow = 3, align = "v",
                                      labels = c("A", "B", "C"))
+
 
 ggsave(toxic_ivm_plot, file = "2.ivm-stagger-distr/plots/fig_2_toxic_ivm_plots.pdf")
