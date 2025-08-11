@@ -27,7 +27,7 @@ covs <- unique(df_distr_all$ivm_cov_par)
 
 df_distr <- df_distr_all %>%
   filter(init_EIR == 2) #filter for low endemicity
-
+start <- (365*5)+200
 ####
 #MATAMAL: 4 weeks after last MDA (prevalence)
 #BOHEMIA: incidence from first MDA, for 6 months
@@ -48,75 +48,80 @@ df_distr <- df_distr %>%
 #dotted arrow shows point of matamal prevalence survey
 #bound box is bohemia incidence period
 #full shaded area is area that I measure
+max_mv <- max(df_distr$mv)
 mv_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = mv, col = as.factor(model_type))) +
   geom_line(size = 1.1) +
   theme_bw(base_size = 14) +
-  ylim(0, 50) +
   ylab("Mosquito density")+
   theme(legend.position = "none") +
 
   scale_color_manual(values = distr_pals, labels = c("10 days", "20 days", "1 day"),
                      name = "Time to complete MDA") +
-  coord_cartesian(xlim = c(-0.25, 1))+
+  coord_cartesian(xlim = c(-0.25, 1), ylim = c(0, 2))+
   xlab("Years since intervention started") +
-  geom_segment(x = 0, y = 48, xend = 0, yend = 42, arrow = arrow(),
+  geom_segment(x = 0, y = max_mv+0.3, xend = 0, yend = max_mv, arrow = arrow(),
                col = "black", size = 1.1)+
-  geom_segment(x = second_mda/365, y = 48, xend = second_mda/365, yend = 42, arrow = arrow(),
+  geom_segment(x = second_mda/365, y = max_mv+0.3, xend = second_mda/365, yend = max_mv, arrow = arrow(),
                col = "black", size = 1.1)+
-  geom_segment(x = third_mda/365, y = 48, xend = third_mda/365, yend = 42, arrow = arrow(),
+  geom_segment(x = third_mda/365, y = max_mv+0.3, xend = third_mda/365, yend = max_mv, arrow = arrow(),
                col = "black", size = 1.1)+
-  geom_segment(x = plot_matamal/365, y = 48, xend = plot_matamal/365, yend = 42,
+  geom_segment(x = plot_matamal/365, y = max_mv+0.3, xend = plot_matamal/365, yend = max_mv,
                arrow = arrow(),
                col = "blue", size = 1.1) +
   annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 20, ymax = 42,
            fill = "white", alpha = 0.1, col = "black")+
   annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = 42,alpha = 0.1)
 
+max_eir <- max(df_distr$EIRout)
+
 eir_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = EIRout, col = as.factor(model_type)))+
   geom_line(size = 1.1)+
   theme_bw(base_size = 14)+
-  coord_cartesian(ylim = c(0, 0.3), xlim = c(-0.25, 1))+
+  coord_cartesian(ylim = c(0, 0.01), xlim = c(-0.25, 1))+
   scale_color_manual(name = "Scenario", values = distr_pals)+
   guides(col = "none")+
-  xlim(-0.25, 1) +
   ylab("Average number of infectious bites \n per person per day (daily EIR)")+
   xlab("Years since intervention started") +
-  geom_segment(x = 0, y = 0.28, xend = 0, yend =0.23, arrow = arrow(),
+  geom_segment(x = 0, y = max_eir+0.0015, xend = 0, yend =max_eir, arrow = arrow(),
                col = "black", size = 1.1)+
-  geom_segment(x = second_mda/365, y = 0.28, xend = second_mda/365, yend =0.23, arrow = arrow(),
+  geom_segment(x = second_mda/365, y =  max_eir+0.0015, xend = second_mda/365, yend =max_eir, arrow = arrow(),
                col = "black", size = 1.1)+
-  geom_segment(x = third_mda/365, y = 0.28, xend = third_mda/365, yend =0.23, arrow = arrow(),
+  geom_segment(x = third_mda/365, y = max_eir+0.0015, xend = third_mda/365, yend =max_eir, arrow = arrow(),
                col = "black", size = 1.1)+
-  geom_segment(x = plot_matamal/365, y = 0.28, xend = plot_matamal/365, yend = 0.23,
+  geom_segment(x = plot_matamal/365, y = max_eir+0.0015, xend = plot_matamal/365, yend = max_eir,
                arrow = arrow(),
                col = "blue", size = 1.1)+
   annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = 0.23,
            fill = "white", alpha = 0.1, col = "black")+
   annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = 0.23,alpha = 0.1)
 
+
+max_prev <- max(df_distr$slide_prev0to5*100)
+
 prev_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = slide_prev0to5*100, col = as.factor(model_type)))+
   geom_line(size = 1.1)+
   theme_bw(base_size = 14)+
-  coord_cartesian(ylim = c(0, 75), , xlim = c(-0.25, 1))+
+  coord_cartesian(ylim = c(0, 20), , xlim = c(-0.25, 1))+
   scale_color_manual(name = "Scenario", values = distr_pals,
                      labels = c("10-day MDA", "20-day MDA", "Overnight MDA", "Baseline"))+
   #guides(col = "none")+
-  theme(legend.position = c(0.4, 0.3))+
+  theme(legend.position = c(0.4, 0.8))+
   xlab("Years since intervention started")+
   ylab("Slide prevalence (%) in children \n under 5-years-old") +
-  geom_segment(x = 0, y = 73, xend = 0, yend =65, arrow = arrow(),
+  geom_segment(x = 0, y = max_prev+2, xend = 0, yend =max_prev, arrow = arrow(),
                col = "black", size = 1.1)+
-  geom_segment(x = second_mda/365, y = 73, xend = second_mda/365, yend =65, arrow = arrow(),
+  geom_segment(x = second_mda/365, y = max_prev+2, xend = second_mda/365, yend =max_prev, arrow = arrow(),
                col = "black", size = 1.1)+
-  geom_segment(x = third_mda/365, y = 73, xend = third_mda/365, yend =65, arrow = arrow(),
+  geom_segment(x = third_mda/365, y = max_prev+2, xend = third_mda/365, yend =max_prev, arrow = arrow(),
                col = "black", size = 1.1)+
-  geom_segment(x = plot_matamal/365, y = 73, xend = plot_matamal/365, yend = 65,
+  geom_segment(x = plot_matamal/365, y = max_prev+2, xend = plot_matamal/365, yend = max_prev,
                arrow = arrow(),
                col = "blue", size = 1.1)+
   annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = 64,
            fill = "white", alpha = 0.1, col = "black")+
   annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = 64,alpha = 0.1)
 
+inc_pos <- 1
 
 inc_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = clin_inc0to5*1000, col = as.factor(model_type)))+
   geom_line(size = 1.1)+
@@ -125,15 +130,15 @@ inc_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = clin_inc0to5*1000, col
                      labels = c("10-day MDA", "20-day MDA", "Overnight MDA", "Baseline"))+
   guides(col = "none")+
   ylab("Clinical incidence in children \n under 5-years-old, per 1000 persons")+
-  coord_cartesian(xlim = c(-0.25, 1), ylim = c(0, 7.5))+
+  coord_cartesian(xlim = c(-0.25, 1), ylim = c(0, 2))+
   xlab("Years since intervention started")+
-  geom_segment(aes(x = 0, y = 7, xend = 0, yend =6), arrow = arrow(),
+  geom_segment(aes(x = 0, y = inc_pos+0.25, xend = 0, yend =inc_pos), arrow = arrow(),
                col = "black", size = 1.1)+
-  geom_segment(aes(x = second_mda/365, y = 7, xend = second_mda/365, yend =6), arrow = arrow(),
+  geom_segment(aes(x = second_mda/365, y = inc_pos+0.25, xend = second_mda/365, yend =inc_pos), arrow = arrow(),
                col = "black", size = 1.1)+
-  geom_segment(aes(x = third_mda/365, y = 7, xend = third_mda/365, yend =6), arrow = arrow(),
+  geom_segment(aes(x = third_mda/365, y = inc_pos+0.25, xend = third_mda/365, yend =inc_pos), arrow = arrow(),
                col = "black", size = 1.1)+
-  geom_segment(aes(x = plot_matamal/365, y = 7, xend = plot_matamal/365, yend = 6),
+  geom_segment(aes(x = plot_matamal/365, y = inc_pos+0.25, xend = plot_matamal/365, yend = inc_pos),
                arrow = arrow(),
                col = "blue", size = 1.1) +
   annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = 6,
@@ -250,7 +255,7 @@ distr_pals2 <- distr_pals[1:4]
 cov_error <- impact_measurements_long %>%
   ungroup() %>%
   select(-ref) %>%
-  filter(init_EIR == 100 & ivm_cov_par %in% c(0.5, 0.9)) %>%
+  filter(init_EIR == 2 & ivm_cov_par %in% c(0.5, 0.9)) %>%
   pivot_wider(names_from = ivm_cov_par, values_from = impact) %>%
   rename(cov_low_0.5 = `0.5`,
          cov_high_0.9 = `0.9`)
@@ -258,7 +263,7 @@ cov_error <- impact_measurements_long %>%
 impact_main_plot <- ggplot() +
   # Bars
   geom_bar(
-    data = impact_measurements_long %>% filter(init_EIR == 100 & ivm_cov_par == 0.7),
+    data = impact_measurements_long %>% filter(init_EIR == 2 & ivm_cov_par == 0.7),
     aes(x = factor(scenario), y = impact, fill = as.factor(intervention)),
     stat = "identity",
     position = position_dodge(width = 0.9)
@@ -289,15 +294,8 @@ impact_main_plot <- ggplot() +
   ))
 
 impact_measurements_long %>%
-  filter(init_EIR == 100 & ivm_cov_par == 0.7 & scenario == "Once year since start")%>%
+  filter(init_EIR == 2 & ivm_cov_par == 0.7 & scenario == "Once year since start")%>%
   group_by(scenario, intervention)
-
-# all-in 15.7
-#20d 19.1
-cov_error %>%
-  filter(init_EIR == 100 & scenario == "Once year since start" )  # all-in 13.9-16.8
-#20d 16.8 to 20.6
-
 
 dynamics_perennial <- cowplot::plot_grid(mv_plot, eir_plot, prev_plot, inc_plot,
                                          labels = c("A", "B", "C", "D"),
