@@ -108,7 +108,7 @@ impact_plot_sens <- ggplot(summary_impact2,
     pattern_spacing = 0.02,
     pattern_key_scale_factor = 0.5
   ) +
-  theme_minimal() +
+  theme_bw(base_size = 14)+
   scale_y_sqrt(limits = c(0, 2.5),
                breaks = c(0, 0.5, 1, 1.5, 2.0, 2.5), #original scale breaks
                labels = c(0, 0.5, 1, 1.5, 2.0, 2.5)) +
@@ -143,7 +143,7 @@ df_all_main_sens <- rbind(int_scenarios_sens, base_scenarios_sens)
 sens_mosq_killed_plot <- ggplot(df_all_main_sens, aes(x = t-start_int, y = D, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
   geom_line(linewidth = 0.9)+
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
-  theme_bw()+
+  theme_bw(base_size = 14)+
   guides(col = "none", lty = "none")+
   labs(col = "Duration of killing (days)")+
   ylab("Number of mosquitoes killed by \n intervention")+
@@ -157,7 +157,7 @@ sens_mosq_killed_plot <- ggplot(df_all_main_sens, aes(x = t-start_int, y = D, co
 sens_daily_inc_plot <- ggplot(df_all_main_sens, aes(x = t-start_int, y = C_daily, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
   geom_line(linewidth = 0.9)+
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
-  theme_bw()+
+  theme_bw(base_size = 14)+
   theme(legend.position = c(0.8, 0.5))+
   guides(col = "none", linetype = "none")+
   labs(col = "Duration of killing (days)")+
@@ -171,7 +171,7 @@ sens_daily_inc_plot <- ggplot(df_all_main_sens, aes(x = t-start_int, y = C_daily
 sens_prevalence_plot <- ggplot(df_all_main_sens, aes(x = t-start_int, y = (I_h/N)*100, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
   geom_line(linewidth = 0.9)+
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
-  theme_bw()+
+  theme_bw(base_size = 14)+
   #theme(legend.position = c(0.7, 0.3))+
   ylab("Prevalence(%) in humans")+
   #guides(col = "none", linetype = "none")+
@@ -190,7 +190,7 @@ sens_prevalence_plot <- ggplot(df_all_main_sens, aes(x = t-start_int, y = (I_h/N
 sens_mosq_pop_plot <- ggplot(df_all_main_sens, aes(x = t-start_int, y = M, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
   geom_line(linewidth = 0.9)+
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
-  theme_bw()+
+  theme_bw(base_size = 14)+
   #theme(legend.position = c(0.7, 0.3))+
   ylab("Mosquito population size")+
   guides(col = "none", linetype = "none")+
@@ -204,7 +204,7 @@ sens_mosq_pop_plot <- ggplot(df_all_main_sens, aes(x = t-start_int, y = M, col =
 sens_Re_t_plot <- ggplot(df_all_main_sens, aes(x = t-start_int, y = Re_t, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
   geom_line(linewidth = 0.9)+
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
-  theme_bw()+
+  theme_bw(base_size = 14)+
   #theme(legend.position = c(0.7, 0.3))+
   ylab("Effective reproduction number (Re,t)")+
   guides(col = "none", linetype = "none")+
