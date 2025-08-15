@@ -1,12 +1,12 @@
-#figures for extreme density dependence and carrying capacity.
+#figures for extreme density dependence and Logistic growth.
 
 require(tidyverse)
 
 df_1_emerge_T <- readRDS("1.simple-seirs-sei/output/model_results_base_df_constant_emergence_TRUE.rds")  #baseline constant emergence T
 df_2_emerge_T <- readRDS("1.simple-seirs-sei/output/model_results_df_constant_emergence_TRUE.rds") #int constant emergence T
 
-df_3_emerge_F <- readRDS("1.simple-seirs-sei/output/model_results_base_df_carrying_capacity.rds") #baseline carrying capacity
-df_4_emerge_F <- readRDS("1.simple-seirs-sei/output/model_results_df_carrying_capacity.rds") #int carrying capacity
+df_3_emerge_F <- readRDS("1.simple-seirs-sei/output/model_results_base_df_carrying_capacity.rds") #baseline Logistic growth
+df_4_emerge_F <- readRDS("1.simple-seirs-sei/output/model_results_df_carrying_capacity.rds") #int Logistic growth
 
 df_1_emerge_T <- df_1_emerge_T %>%
   select(-label) %>%
@@ -64,13 +64,11 @@ scenario_pals2 <- c('#e7298a', scenario_pals) #baseline colour
 inf_mosq <- ggplot(df_all_main, aes(x = t-start_int, y = (I_v/M)*100, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
   geom_line(linewidth = 0.9)+
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
-  theme_bw()+
-  theme(
-    text = base(size = 14))+
+  theme_bw(base_size = 14)+
   guides(col = "none", lty = "none")+
   labs(col = "Duration of killing (days)")+
   ylab("Infectious vectors (%)")+
-  scale_linetype_manual(name = "Adult emergence", labels = c("Carrying capacity", "Constant emergence"),
+  scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
                         values = c("solid", "dotdash"))+
   xlab("Time since intervention started (days)")+
   scale_colour_manual(values = scenario_pals2)+
@@ -86,7 +84,7 @@ susceptible_people <- ggplot(df_all_main, aes(x = t-start_int, y = (S_h/N)*100, 
   #guides(col = "none", lty = "none")+
   labs(col = "Duration of killing (days)")+
   ylab("Susceptible humans (%)")+
-  scale_linetype_manual(name = "Adult emergence", labels = c("Carrying capacity", "Constant emergence"),
+  scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
                         values = c("solid", "dotdash"))+
   xlab("Time since intervention started (days)")+
   scale_colour_manual(values = scenario_pals2)+
