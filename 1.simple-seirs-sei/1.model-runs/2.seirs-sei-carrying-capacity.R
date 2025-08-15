@@ -111,7 +111,7 @@ malaria_model <- odin::odin({
   sigma_h <- user()
   gamma_h <- user()
   constant_emergence <- user()
-  phi <- if(constant_emergence == 0) mu_v*M0 else mu_v*M0 + r*M*(1-M/M0) #carrying capacity using logistic growth model
+  phi <- if(constant_emergence == 0) mu_v*M0 else mu_v*M + r*M*(1-M/M0) #carrying capacity using logistic growth model
   r <- mu_v
   beta_vh <- user()
   mu_v <- user()
@@ -162,10 +162,19 @@ psi_objective_logistic <- function(psi, Delta_t, delta_D_target, params_base) {
   (delta_D_target - D_pred)^2
 }
 
+baseline_psi <- function(Delta_t, delta_D_target, M0) {
+  log_value <- max((M0 - delta_D_target) / M0, .Machine$double.xmin)
+  -log(log_value) / Delta_t # Return value of psi
+}
 
-fit_psi_logistic <- function(Delta_t, delta_D_target, params_base) {
+fit_psi_logistic <- function(Delta_t, delta_D_target, params_base, mu_v, M0) {
+
+  # Use the value of gamma under equal birth and death rates as initial guess. ?? do you mean value of psi?
+  guess <- baseline_psi(Delta_t, delta_D_target, M0)
+
   optim(
-    par = 0.1,
+    #par = 0.1,
+    par = guess,
     fn = psi_objective_logistic,
     method = "L-BFGS-B",
     lower = 1e-6,
@@ -181,13 +190,15 @@ fit_psi_logistic <- function(Delta_t, delta_D_target, params_base) {
 test_Delta_t <- 30       # 30-day intervention
 test_delta_D <- 1900     # target mosquito deaths
 test_params <- params_base
+test_M0 <- 2000
 test_params$M0 <- 2000   # test mosquito population
 test_params$m0 <- test_params$M0 / test_params$N0
 
 psi_test <- fit_psi_logistic(
   Delta_t = test_Delta_t,
   delta_D_target = test_delta_D,
-  params_base = test_params
+  params_base = test_params,
+  M0 = test_params$M0
 )
 
 cat(sprintf("Test run: Delta_t=%d days, delta_D=%d, psi=%.4f\n",
@@ -222,7 +233,7 @@ for (i in seq_len(nrow(grid))) {
   params_iter$mu_v <- mu_v
   params_iter$m0 <- M0 / params_iter$N0
 
-  psi_fit <- fit_psi_logistic(Delta_t, Delta_D, params_iter)
+  psi_fit <- fit_psi_logistic(Delta_t, Delta_D, params_iter, mu_v, M0)
   psi_vec[i] <- psi_fit
   cat(sprintf("Run %d: delta_t=%.1f, delta_D=%.1f, M0=%.0f, psi=%.4f\n",
               i, Delta_t, Delta_D, M0, psi_fit))
