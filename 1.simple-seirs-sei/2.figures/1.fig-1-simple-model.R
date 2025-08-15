@@ -71,9 +71,9 @@ mosq_killed_plot <- ggplot(df_all_main, aes(x = t-start_int, y = D, col = as.fac
   labs(col = "Duration of killing (days)")+
   ylab("Number of mosquitoes killed by \n intervention")+
   scale_linetype_manual(name = "Adult emergence", labels = c("Carrying capacity", "Constant emergence"),
-                        values = c("solid", "dotdash"))+
+                       values = c("solid", "dotdash"))+
   xlab("Time since intervention started (days)")+
-  scale_colour_manual(values = scenario_pals2)+
+  scale_colour_manual(values = scenario_pals2)  +
   coord_cartesian(xlim = c(-10, 300), ylim = c(0,2000))
 
 daily_inc_plot <- ggplot(df_all_main, aes(x = t-start_int, y = C_daily, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
@@ -102,7 +102,7 @@ prevalence_plot <- ggplot(df_all_main, aes(x = t-start_int, y = (I_h/N)*100, col
   scale_linetype_manual(name = "Adult emergence", labels = c("Carrying capacity", "Constant emergence"),
                         values = c("solid", "dotdash"))+
   xlab("Time since intervention started (days)")+
-  theme(legend.position = c(0.5, 0.5))+
+  theme(legend.position = c(0.5, 0.4))+
   scale_colour_manual(values = scenario_pals2, labels = c("Baseline (no intervention)", "10 days", "30 days", "90 days"),
                       name = "Time taken to kill target mosquitoes")+
   coord_cartesian(xlim = c(-10, 300))
@@ -120,7 +120,7 @@ mosq_pop_plot <- ggplot(df_all_main, aes(x = t-start_int, y = M, col = as.factor
                         values = c("solid", "dotdash"))+
   xlim(-10,300)+
   xlab("Time since intervention started (days)")+
-  scale_colour_manual(values = scenario_pals2)+
+  scale_colour_manual(values = scenario_pals2) +
   coord_cartesian(xlim = c(-10, 300), ylim = c(0,2000))
 
 
@@ -235,7 +235,8 @@ impact_plot_main <- ggplot(summary_impact,
   scale_fill_manual(values = scenario_pals) +
   scale_pattern_manual(values = c("Carrying capacity" = "none",
                                   "Constant emergence" = "stripe"))+
-  guides(pattern = guide_legend(
+  guides(pattern_spacing = 0.05,
+         pattern = guide_legend(
     override.aes = list(fill = "white"), # Force fill color in legend
   ),
   #fill = guide_legend(override.aes = list(pattern = "none")),
@@ -255,7 +256,11 @@ figure_dynamics <- cowplot::plot_grid(mosq_killed_plot, mosq_pop_plot,
                                       align = "v",
                                       labels = c("A", "B", "C", "D"))
 
+
 figure_dynamic_impact <- cowplot::plot_grid(figure_dynamics, impact_plot_main,
                                             labels = c("", "E"))
+
+
+
 
 ggsave(figure_dynamic_impact, file = "1.simple-seirs-sei/plots/fig_1_simple_model_plot.pdf")
