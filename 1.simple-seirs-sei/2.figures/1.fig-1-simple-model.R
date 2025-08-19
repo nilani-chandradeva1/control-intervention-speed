@@ -133,7 +133,7 @@ Re_t_plot <- ggplot(df_all_main, aes(x = t-start_int, y = Re_t, col = as.factor(
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
   theme_bw(base_size = 14)+
   #theme(legend.position = c(0.7, 0.3))+
-  ylab("Effective reproduction number \n (Re,t)")+
+  ylab(expression("Effective reproduction number " ~ R[e]))+
   guides(col = "none", linetype = "none")+
   scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
                         values = c("solid", "dotdash"))+
@@ -258,6 +258,7 @@ figure_dynamic_impact <- cowplot::plot_grid(mosq_killed_plot, mosq_pop_plot,
                                            Re_t_plot, impact_plot_main,
                                            labels = c("A", "B", "C", "D", "E", "F"),
                                            nrow = 2, ncol = 3, align = "v")
+
 
 
 ggsave(figure_dynamic_impact, file = "1.simple-seirs-sei/plots/fig_1_simple_model_plot.pdf")
