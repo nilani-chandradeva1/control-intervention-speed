@@ -206,7 +206,7 @@ sens_Re_t_plot <- ggplot(df_all_main_sens, aes(x = t-start_int, y = Re_t, col = 
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
   theme_bw(base_size = 14)+
   #theme(legend.position = c(0.7, 0.3))+
-  ylab("Effective reproduction number (Re,t)")+
+  ylab(expression("Effective reproduction number " ~ R[e]))+
   guides(col = "none", linetype = "none")+
   scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
                         values = c("solid", "dotdash"))+
