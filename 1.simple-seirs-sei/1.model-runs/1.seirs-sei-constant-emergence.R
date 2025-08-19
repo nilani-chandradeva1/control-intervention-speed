@@ -195,11 +195,16 @@ malaria_model <- odin::odin({
   s_v <- S_v/M
   M0 <- user()
 
-  #reproduction number
-  R0 <- (beta_hv*beta_vh*sigma_h*sigma_v)/((sigma_h + mu_h) * (gamma_h+mu_h) * (sigma_v + mu_v) * mu_v)
-  R0_t <- R0*m #R0 at time t, given mosquito density at time t
-  Re_t <- R0_t*s_h*s_v #effective reproduction number
+  Psi_t <- if (t >= tau_real && t <= (tau_real + delta_t)) psi else 0 # add this
 
+  #reproduction number
+  # update the next two lines by changing R0 to R0_0
+  R0_0 <- (beta_hv*beta_vh*sigma_h*sigma_v)/((sigma_h + mu_h) * (gamma_h+mu_h) * (sigma_v + mu_v) * mu_v)
+  R0_t <- R0_0*m #R0 at time t, given mosquito density at time t
+  # insert this line to account for the different R0 when the intervention is on
+  R0 <- R0_t * ((sigma_v+mu_v)*mu_v)/((sigma_v+mu_v+Psi_t)*(mu_v+Psi_t))
+  # update R0_t to R0 in the following line
+  Re_t <- R0*s_h*s_v #effective reproduction number
   #rates
   mu_h <- user()
   beta_hv <- user()
