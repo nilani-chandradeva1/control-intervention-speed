@@ -17,3 +17,15 @@ HR_Smit_plot <- ggplot(ivm_haz, aes(x = Day, y = IVM_300_3_HS))+
   xlab(expression("Day (" * italic(j) * ")"))
 
 ggsave(HR_Smit_plot, file = "2.ivm-stagger-distr/plots/sm_fig_4_HR_Smit.pdf")
+
+#for presentations (bigger font)
+HR_Smit_plot_pres <- ggplot(ivm_haz, aes(x = Day, y = IVM_300_3_HS))+
+  geom_point(size = 2)+
+  geom_line(size = 1)+
+  theme_bw(base_size = 20)+
+  ylab(expression("Hazard ratio of 3×300 "*mu*"g/kg"))+
+  geom_hline(yintercept = 1, linetype = "dashed")+
+  coord_cartesian(xlim = c(0,25), ylim = c(0,10))+
+  xlab(expression("Day (" * italic(j) * ")"))
+
+ggsave(HR_Smit_plot_pres, file = "../glasgow-visit/daily_HR.png")
