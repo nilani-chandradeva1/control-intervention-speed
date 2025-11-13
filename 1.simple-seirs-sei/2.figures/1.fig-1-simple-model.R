@@ -74,7 +74,7 @@ mosq_killed_plot <- ggplot(df_all_main, aes(x = t-start_int, y = D, col = as.fac
                        values = c("solid", "dotdash"))+
   xlab("Time since intervention started (days)")+
   scale_colour_manual(values = scenario_pals2)  +
-  coord_cartesian(xlim = c(-10, 300), ylim = c(0,2000))
+  coord_cartesian(xlim = c(-10, 250), ylim = c(0,2000))
 
 daily_inc_plot <- ggplot(df_all_main, aes(x = t-start_int, y = C_daily, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
   geom_line(linewidth = 0.9)+
@@ -89,7 +89,7 @@ daily_inc_plot <- ggplot(df_all_main, aes(x = t-start_int, y = C_daily, col = as
                         values = c("solid", "dotdash"))+
   xlab("Time since intervention started (days)")+
   scale_colour_manual(values = scenario_pals2)+
-  coord_cartesian(xlim = c(-10, 300))
+  coord_cartesian(xlim = c(-10, 250))
 
 prevalence_plot <- ggplot(df_all_main, aes(x = t-start_int, y = (I_h/N)*100, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
   geom_line(linewidth = 0.9)+
@@ -105,7 +105,61 @@ prevalence_plot <- ggplot(df_all_main, aes(x = t-start_int, y = (I_h/N)*100, col
   theme(legend.position = c(0.6, 0.5))+
   scale_colour_manual(values = scenario_pals2, labels = c("Baseline (no intervention)", "10 days", "30 days", "90 days"),
                       name = "Time taken to kill target mosquitoes")+
-  coord_cartesian(xlim = c(-10, 300))
+  coord_cartesian(xlim = c(-10, 250))
+
+
+df_all_main_baseline <- df_all_main %>%
+  filter(delta_t == 0) %>%
+  rename(baseline_delta_t = delta_t) %>%
+  #select(I_h, N, baseline_delta_t) %>%
+  mutate(scenario = "baseline",
+         prev_baseline = I_h/N) %>%
+  select(prev_baseline, baseline_delta_t,t, constant_emergence)
+
+df_all_main_ints <- df_all_main %>%
+  filter(delta_t != 0) %>%
+  #select(I_h, N, delta_t) %>%
+  mutate(scenario = "int",
+         prev_int = I_h/N) %>%
+  select(prev_int, delta_t,t, constant_emergence) %>%
+  pivot_wider(names_from = delta_t, values_from = prev_int)
+
+df_all_main_compare <- left_join(df_all_main_ints, df_all_main_baseline) %>%
+  mutate(eff_prev_10d = ((prev_baseline - `10`)/prev_baseline)*100,
+         eff_prev_30d = ((prev_baseline - `30`)/prev_baseline)*100,
+         eff_prev_90d = ((prev_baseline - `90`)/prev_baseline)*100) %>%
+  select(t, constant_emergence,eff_prev_10d,eff_prev_30d,eff_prev_90d) %>%
+  pivot_longer(cols = c(eff_prev_10d,eff_prev_30d,eff_prev_90d),names_to = "delta_t", values_to = "eff_prev")
+
+prev_eff_plot <- ggplot(df_all_main_compare, aes(x = t-start_int, y = eff_prev, col = as.factor(delta_t), lty = as.factor(constant_emergence)))+
+  geom_line(linewidth = 0.9)+
+  geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
+  theme_bw(base_size = 14)+
+  theme(
+    text = element_text(size = 14))+
+  ylab("Percentage reduction (%) in \n prevalence")+
+  scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
+                        values = c("solid", "dotdash"))+
+  xlab("Time since intervention started (days)")+
+  theme(legend.position = "none")+
+  scale_colour_manual(values = scenario_pals2[2:4], labels = c("10 days", "30 days", "90 days"),
+                      name = "Time taken to kill target mosquitoes")+
+  coord_cartesian(xlim = c(-10, 250))
+
+prev_eff_plot2 <- ggplot(df_all_main_compare, aes(x = t-start_int, y = eff_prev, col = as.factor(delta_t), lty = as.factor(constant_emergence)))+
+  geom_line(linewidth = 0.9)+
+  geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
+  theme_bw(base_size = 14)+
+  theme(
+    text = element_text(size = 14))+
+  ylab("Percentage reduction (%) in \n prevalence")+
+  scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
+                        values = c("solid", "dotdash"))+
+  xlab("Time since intervention started (days)")+
+  theme(legend.position = c(0.6, 0.7))+
+  scale_colour_manual(values = scenario_pals2[2:4], labels = c("10 days", "30 days", "90 days"),
+                      name = "Time taken to kill target mosquitoes")+
+  coord_cartesian(xlim = c(-10, 250))
 
 
 mosq_pop_plot <- ggplot(df_all_main, aes(x = t-start_int, y = M, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
@@ -121,7 +175,7 @@ mosq_pop_plot <- ggplot(df_all_main, aes(x = t-start_int, y = M, col = as.factor
   xlim(-10,300)+
   xlab("Time since intervention started (days)")+
   scale_colour_manual(values = scenario_pals2) +
-  coord_cartesian(xlim = c(-10, 300), ylim = c(0,2000))
+  coord_cartesian(xlim = c(-10, 250), ylim = c(0,2000))
 
 
 df_all_main %>%
@@ -132,19 +186,26 @@ Re_t_plot <- ggplot(df_all_main, aes(x = t-start_int, y = Re_t, col = as.factor(
   geom_line(linewidth = 0.9)+
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
   theme_bw(base_size = 14)+
-  #theme(legend.position = c(0.7, 0.3))+
+  theme(legend.position = c(0.7, 0.7))+
   ylab(expression("Effective reproduction number " ~ R[e]))+
-  guides(col = "none", linetype = "none")+
+  #guides(col = "none", linetype = "none")+
   scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
                         values = c("solid", "dotdash"))+
   xlim(-10,300)+
   xlab("Time since intervention started (days)")+
-  scale_colour_manual(values = scenario_pals2)+
+  scale_colour_manual(values = scenario_pals2, labels = c("Baseline (no intervention)", "10 days", "30 days", "90 days"),
+                      name = "Time taken to kill target mosquitoes")+
  coord_cartesian(ylim = c(0, 2.5))
+
+
+#TC: move Re plot to the SM
+ggsave(Re_t_plot, file = "1.simple-seirs-sei/plots/Re_t_plot_SM.pdf")
+
+
 
 figure_dynamics <- cowplot::plot_grid(mosq_killed_plot, mosq_pop_plot,
                                       daily_inc_plot, prevalence_plot,
-                                      Re_t_plot,
+                                      prev_eff_plot,
                                       align = "v",
                                       labels = c("A", "B", "C", "D"))
 
@@ -199,7 +260,7 @@ impact_plot <- ggplot(summary_impact, aes(x = factor(time_period, levels = c("10
   theme_bw(base_size = 14)+
   #ylim(0,4)+
   scale_y_continuous(limits = c(0,4), labels = c(0, 10, 20, 30, 40))+
-  ylab("Efficacy (%)")+
+  ylab("Percentage (%) cases averted \n due to intervention")+
   xlab("Time period over which incidence measured since intervention start")+
   labs(fill = "Time to complete MDA (days)")+
   theme(legend.position = c(0.8, 0.9))+
@@ -225,7 +286,7 @@ impact_plot_main <- ggplot(summary_impact,
   ) +
   theme_minimal() +
   scale_y_continuous(limits = c(0, 4), labels = c(0, 10, 20, 30, 40)) +
-  ylab("Efficacy (%)") +
+  ylab("Percentage (%) cases averted \n due to intervention")+
   xlab("Time period (days) over \n which incidence measured since intervention started") +
   labs(fill = "Time to complete MDA (days)",
        pattern = "Adult emergence") +
@@ -255,10 +316,18 @@ summary_impact %>%
 #
 figure_dynamic_impact <- cowplot::plot_grid(mosq_killed_plot, mosq_pop_plot,
                                            daily_inc_plot, prevalence_plot,
-                                           Re_t_plot, impact_plot_main,
+                                           prev_eff_plot, impact_plot_main,
                                            labels = c("A", "B", "C", "D", "E", "F"),
                                            nrow = 2, ncol = 3, align = "v")
 
 
 
 ggsave(figure_dynamic_impact, file = "1.simple-seirs-sei/plots/fig_1_simple_model_plot.pdf")
+
+figure_dynamic_impact_pres <- cowplot::plot_grid(mosq_killed_plot, mosq_pop_plot,
+                                            prev_eff_plot2,
+                                            impact_plot_main,
+                                            labels = c("A", "B", "C", "D"),
+                                            nrow = 2, ncol = 2, align = "v")
+ggsave(figure_dynamic_impact_pres, file = "1.simple-seirs-sei/plots/fig_1_simple_model_plot_pres.pdf")
+ggsave(figure_dynamic_impact_pres, file = "1.simple-seirs-sei/plots/fig_1_simple_model_plot_pres.png")
