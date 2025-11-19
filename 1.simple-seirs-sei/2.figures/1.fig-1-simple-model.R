@@ -66,14 +66,17 @@ mosq_killed_plot <- ggplot(df_all_main, aes(x = t-start_int, y = D, col = as.fac
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
   theme_bw(base_size = 14)+
   theme(
-    text = element_text(size = 14))+
-  guides(col = "none", lty = "none")+
+    text = element_text(size = 14),
+    legend.position = c(0.8, 0.5))+
+  #guides(col = "none", lty = "none")+
   labs(col = "Duration of killing (days)")+
-  ylab("Number of mosquitoes killed by \n intervention")+
+  ylab("Cumulative number of mosquitoes \n killed by intervention")+
   scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
                        values = c("solid", "dotdash"))+
   xlab("Time since intervention started (days)")+
-  scale_colour_manual(values = scenario_pals2)  +
+  scale_colour_manual(values = scenario_pals2,
+                      labels = c("Baseline", "10 day killing period", "30 day killing period", "90 day killing period"),
+                      name = "Scenario")  +
   coord_cartesian(xlim = c(-10, 250), ylim = c(0,2000))
 
 daily_inc_plot <- ggplot(df_all_main, aes(x = t-start_int, y = C_daily, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
@@ -157,9 +160,10 @@ prev_eff_plot2 <- ggplot(df_all_main_compare, aes(x = t-start_int, y = eff_prev,
                         values = c("solid", "dotdash"))+
   xlab("Time since intervention started (days)")+
   theme(legend.position = c(0.6, 0.7))+
-  scale_colour_manual(values = scenario_pals2[2:4], labels = c("10 days", "30 days", "90 days"),
+  scale_colour_manual(values = scenario_pals2[2:4], labels = c("Basline","10 days", "30 days", "90 days"),
                       name = "Time taken to kill target mosquitoes")+
-  coord_cartesian(xlim = c(-10, 250))
+  coord_cartesian(xlim = c(-10, 250))+
+  guides(colour = "none", lty = "none")
 
 
 mosq_pop_plot <- ggplot(df_all_main, aes(x = t-start_int, y = M, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
