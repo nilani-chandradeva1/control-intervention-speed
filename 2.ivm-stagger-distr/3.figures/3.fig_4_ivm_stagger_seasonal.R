@@ -1,4 +1,4 @@
-#plots for impact of staggered vs overnight ivermectin distributions in seasonal settings
+#plots for impact of staggered vs 1-day ivermectin distributions in seasonal settings
 #high endemicity
 require(tidyverse)
 
@@ -24,6 +24,7 @@ unique(df_distr_all$init_EIR)
 unique(df_distr_all$model_type)
 
 distr_pals <- c('#66c2a5','#fc8d62','#8da0cb','#a6d854')
+distr_pals_order <- c(distr_pals[4], distr_pals[3], distr_pals[1], distr_pals[2])
 covs <- unique(df_distr_all$ivm_cov_par)
 
 df_distr <- df_distr_all %>%
@@ -76,6 +77,11 @@ mv_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = mv, col = as.factor(mod
   annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = max_mv,
            alpha = 0.05)
 
+df_distr_pres <- df_distr
+df_distr_pres$model_type <- df_distr$model_type
+df_distr_pres$model_type <- factor(df_distr_pres$model_type, levels = c("baseline-Sen",
+                                                                        ""))
+
 mv_plot_pres <- ggplot(df_distr, aes(x = (t - start)/365, y = mv, col = as.factor(model_type))) +
   geom_line(size = 1.1) +
   theme_bw(base_size = 18) +
@@ -89,7 +95,7 @@ mv_plot_pres <- ggplot(df_distr, aes(x = (t - start)/365, y = mv, col = as.facto
                                                                         "1 day to complete MDA",
                                                                         "Baseline (no intervention)")) +
   coord_cartesian(xlim = c(-0.25,1), ylim = c(0, 200))+
-  xlab("Years since intervention started") +
+  xlab("Years since \n intervention started") +
   geom_segment(x = 0, y = max_mv+25, xend = 0, yend = max_mv, arrow = arrow(length = unit(0.3, "cm")),
                col = "black", size = 1.1)+ #first MDA
   geom_segment(x = second_mda/365, y = max_mv+25, xend = second_mda/365, yend = max_mv, arrow = arrow(length = unit(0.3, "cm")),
@@ -157,7 +163,7 @@ prev_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = slide_prev0to5*100, c
   theme_bw(base_size = 14)+
   #ylim(0, 75)+
   scale_color_manual(name = "Scenario", values = distr_pals,
-                     labels = c("10-day MDA", "20-day MDA", "Overnight MDA", "Baseline"))+
+                     labels = c("10-day MDA", "20-day MDA", "1-day MDA", "Baseline"))+
   theme(legend.position = c(0.45, 0.2))+
   coord_cartesian(xlim = c(-0.25,1), ylim = c(0, 80))+
   xlab("Years since intervention started")+
@@ -175,15 +181,23 @@ prev_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = slide_prev0to5*100, c
            fill = "white", alpha = 0.1, col = "black")+
   annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = max_prev,alpha = 0.05)
 
+distr_pals <- c('#66c2a5','#fc8d62','#8da0cb','#a6d854')
+
+
 prev_plot_pres <- ggplot(df_distr, aes(x = (t - start)/365, y = slide_prev0to5*100, col = as.factor(model_type)))+
   geom_line(size = 1.1)+
   theme_bw(base_size = 18)+
   #ylim(0, 75)+
-  scale_color_manual(name = "Scenario", values = distr_pals,
-                     labels = c("10-day MDA", "20-day MDA", "Overnight MDA", "Baseline"))+
+  scale_color_manual(name = "Scenario", values = c("baseline-Sen" = distr_pals[4],
+                                                   "all-in-one-stag-Sen" = distr_pals[3],
+                                                   "10d-stagger-Sen" = distr_pals[1],
+                                                   "20d-stagger-Sen" = distr_pals[2]),
+                     labels = c("baseline-Sen" = "Baseline", "all-in-one-stag-Sen" = "1 day to complete MDA",
+                                "10d-stagger-Sen" = "10 days to complete MDA", "20d-stagger-Sen" = "20 days to complete MDA"),
+                     breaks = c("baseline-Sen", "all-in-one-stag-Sen", "10d-stagger-Sen", "20d-stagger-Sen"))+
   theme(legend.position = c(0.45, 0.2))+
   coord_cartesian(xlim = c(-0.25,1), ylim = c(0, 80))+
-  xlab("Years since intervention started")+
+  xlab("Years since \n intervention started")+
   ylab("Slide prevalence (%) in children \n under 5-years-old") +
   geom_segment(x = 0, y = max_prev+10, xend = 0, yend =max_prev, arrow = arrow(length = unit(0.3, "cm")),
                col = "black", size = 1.1)+
@@ -356,6 +370,7 @@ levels_x <- unique(impact_measurements_long$scenario)
 
 distr_pals <- c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')
 distr_pals2 <- distr_pals[1:4]
+distr_pals_order <- c(distr_pals[5], distr_pals[3], distr_pals[1], distr_pals[2])
 
 cov_error <- impact_measurements_long %>%
   ungroup() %>%
@@ -407,17 +422,30 @@ impact_main_plot <- ggplot() +
   ))+
   guides(fill = "none")
 
+impact_measurements_long2 <- impact_measurements_long
+impact_measurements_long2$intervention <- factor(impact_measurements_long2$intervention,
+                                                 levels = c("impact_all_in_stag",
+                                                            "impact_10d",
+                                                            "impact_20d"))
+cov_error2 <- cov_error
+cov_error2$intervention <- factor(cov_error2$intervention,
+                                                 levels = c("impact_all_in_stag",
+                                                            "impact_10d",
+                                                            "impact_20d"))
+distr_pals <- c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')
+#distr_pals2 <- distr_pals[1:4]
+
 impact_main_plot_pres <- ggplot() +
   # Bars
   geom_bar(
-    data = impact_measurements_long %>% filter(init_EIR == 100 & ivm_cov_par == 0.7),
+    data = impact_measurements_long2 %>% filter(init_EIR == 100 & ivm_cov_par == 0.7),
     aes(x = factor(scenario), y = impact, fill = as.factor(intervention)),
     stat = "identity",
     position = position_dodge(width = 0.9)
   ) +
   # Error bars
   geom_errorbar(
-    data = cov_error,
+    data = cov_error2,
     aes(
       x = factor(scenario),
       ymin = cov_low_0.5,
@@ -431,14 +459,19 @@ impact_main_plot_pres <- ggplot() +
   theme_bw(base_size = 18) +
   theme(legend.position = c(0.7, 0.8)) +
   scale_fill_manual(
-    values = distr_pals2, name = "Scenario",
-    labels = c(
-      "10 days to complete monthly MDA",
-      "20 days to complete monthly MDA",
-      "1 day to complete monthyl MDA (original model)",
-      "1 day to complete monthly MDA (staggered model)"
-    )
-  ) +
+    values = c("impact_all_in_stag" = distr_pals[3],
+               "impact_10d" = distr_pals[1], "impact_20d" = distr_pals[2]),
+    labels = c("impact_all_in_stag" = "1 day to complete MDA",
+               "impact_10d" = "10 days to complete MDA",
+               "impact_20d" = "20 days to complete MDA"),
+    breaks = c("impact_all_in_stag", "impact_10d", "impact_20d"),
+    name = "Scenario")+
+    #labels = c(
+    #  "10 days to complete monthly MDA",
+    #  "20 days to complete monthly MDA",
+    #  "1 day to complete monthyl MDA (original model)",
+    #  "1 day to complete monthly MDA (staggered model)"
+
   xlab("Time of measurement") +
   guides(fill = "none")+
   ylab("Efficacy (%)") +
@@ -446,8 +479,7 @@ impact_main_plot_pres <- ggplot() +
     "bohemia" = "Incidence U5s \n (start to 6m later)",
     "matamal" = "Prevalence U5s \n (1m after last MDA)",
     "Once year since start" = "Incidence U5s \n (start to 1y later)"
-  ))+
-  guides(fill = "none")
+  ))
 
 
 dynamics_seasonal <- cowplot::plot_grid(mv_plot, eir_plot, prev_plot, inc_plot,
