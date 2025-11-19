@@ -159,15 +159,19 @@ prev_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = slide_prev0to5*100, c
            fill = "white", alpha = 0.1, col = "black")+
   annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = max_prev,alpha = 0.05)
 
+distr_pals <- c('#66c2a5','#fc8d62','#8da0cb','#a6d854')
 
 prev_plot_pres <- ggplot(df_distr, aes(x = (t - start)/365, y = slide_prev0to5*100, col = as.factor(model_type)))+
   geom_line(size = 1.1)+
   theme_bw(base_size = 18)+
   #ylim(0, 75)+
-  scale_color_manual(name = "Scenario", values = distr_pals, labels = c("10 days to complete MDA",
-                                                                        "20 days to complete MDA",
-                                                                        "1 day to complete MDA",
-                                                                        "Baseline (no intervention)")) +
+  scale_color_manual(name = "Scenario", values = c("baseline-Sen" = distr_pals[4],
+                                                   "all-in-one-stag-Sen" = distr_pals[3],
+                                                   "10d-stagger-Sen" = distr_pals[1],
+                                                   "20d-stagger-Sen" = distr_pals[2]),
+                     labels = c("baseline-Sen" = "Baseline", "all-in-one-stag-Sen" = "1 day to complete MDA",
+                                "10d-stagger-Sen" = "10 days to complete MDA", "20d-stagger-Sen" = "20 days to complete MDA"),
+                     breaks = c("baseline-Sen", "all-in-one-stag-Sen", "10d-stagger-Sen", "20d-stagger-Sen"))+
   theme(legend.position = c(0.4, 0.2))+
   coord_cartesian(xlim = c(-0.25,1))+
   xlab("Years since intervention started")+
@@ -365,17 +369,30 @@ impact_main_plot <- ggplot() +
   ))+
   guides(fill = "none")
 
+
+impact_measurements_long2 <- impact_measurements_long
+impact_measurements_long2$intervention <- factor(impact_measurements_long2$intervention,
+                                                 levels = c("impact_all_in_stag",
+                                                            "impact_10d",
+                                                            "impact_20d"))
+cov_error2 <- cov_error
+cov_error2$intervention <- factor(cov_error2$intervention,
+                                  levels = c("impact_all_in_stag",
+                                             "impact_10d",
+                                             "impact_20d"))
+distr_pals <- c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')
+
 impact_main_plot_pres <- ggplot() +
   # Bars
   geom_bar(
-    data = impact_measurements_long %>% filter(init_EIR == 100 & ivm_cov_par == 0.7),
+    data = impact_measurements_long2 %>% filter(init_EIR == 100 & ivm_cov_par == 0.7),
     aes(x = factor(scenario), y = impact, fill = as.factor(intervention)),
     stat = "identity",
     position = position_dodge(width = 0.9)
   ) +
   # Error bars
   geom_errorbar(
-    data = cov_error,
+    data = cov_error2,
     aes(
       x = factor(scenario),
       ymin = cov_low_0.5,
@@ -389,14 +406,13 @@ impact_main_plot_pres <- ggplot() +
   theme_bw(base_size = 18) +
   theme(legend.position = c(0.7, 0.8)) +
   scale_fill_manual(
-    values = distr_pals2, name = "Scenario",
-    labels = c(
-      "10 days to complete monthly MDA",
-      "20 days to complete monthly MDA",
-      "1 day to complete monthly MDA (original model)",
-      "1 day to complete monthly MDA (staggered model)"
-    )
-  ) +
+    values = c("impact_all_in_stag" = distr_pals[3],
+               "impact_10d" = distr_pals[1], "impact_20d" = distr_pals[2]),
+    labels = c("impact_all_in_stag" = "1 day to complete MDA",
+               "impact_10d" = "10 days to complete MDA",
+               "impact_20d" = "20 days to complete MDA"),
+    breaks = c("impact_all_in_stag", "impact_10d", "impact_20d"),
+    name = "Scenario") +
   xlab("Time of measurement") +
   ylab("Efficacy (%)") +
   scale_x_discrete(labels = c(
