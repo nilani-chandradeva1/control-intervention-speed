@@ -84,7 +84,7 @@ my_sim_mod_all <- function(){
   res_mod_out <- lapply(mod_out_list, runfun)
   mod_df <- do.call(rbind, sapply(1:(nrow(df_var_all)), function(x){
     df <- as.data.frame(res_mod_out[[x]])
-    df2 <-  as.data.frame(dplyr::select(.data = df, t, mu, mv, mvx_dead,Q0, ivm_cov,ivm_cov_par, slide_prev0to5, Svtot, Evtot, Ivtot,EIR_tot, EIRout, clin_inc0to5))
+    df2 <-  as.data.frame(dplyr::select(.data = df, t, mu, mv, mvx_dead,Q0, ivm_cov,ivm_cov_par, slide_prev0to80, Svtot, Evtot, Ivtot,EIR_tot, EIRout, clin_inc0to5))
     df3 <- as.data.frame(dplyr::mutate(.data = df2, ref = x, model_type = "all-in-one"))}, simplify = F))
   return(mod_df)
 } #adding mvtot_1 and 2 and 3 so can rbind onto the rest
@@ -137,7 +137,7 @@ my_sim_mod_all_stag <- function(){
   res_mod_out <- lapply(mod_out_list, runfun)
   mod_df <- do.call(rbind, sapply(1:(nrow(df_var_all)), function(x){
     df <- as.data.frame(res_mod_out[[x]])
-    df2 <-  as.data.frame(dplyr::select(.data = df, t, mu, mv, mvx_dead,Q0, ivm_cov,ivm_cov_par ,slide_prev0to5,Svtot, Evtot, Ivtot,EIR_tot, EIRout, clin_inc0to5))
+    df2 <-  as.data.frame(dplyr::select(.data = df, t, mu, mv, mvx_dead,Q0, ivm_cov,ivm_cov_par ,slide_prev0to80,Svtot, Evtot, Ivtot,EIR_tot, EIRout, clin_inc0to5))
     df3 <- as.data.frame(dplyr::mutate(.data = df2, ref = x, model_type = "all-in-one-stag"))}, simplify = F))
   return(mod_df)
 } #adding mvtot_1 and 2 and 3 so can rbind onto the rest
@@ -234,7 +234,7 @@ my_sim_mod_10d_stag <- function(){
   res_mod_out <- lapply(mod_out_list, runfun)
   mod_df <- do.call(rbind, sapply(1:(nrow(df_var_all)), function(x){
     df <- as.data.frame(res_mod_out[[x]])
-    df2 <-  as.data.frame(dplyr::select(.data = df, t, mu, mv, mvx_dead,Q0, ivm_cov, ivm_cov_par,slide_prev0to5,Svtot, Evtot, Ivtot,EIR_tot, EIRout, clin_inc0to5))
+    df2 <-  as.data.frame(dplyr::select(.data = df, t, mu, mv, mvx_dead,Q0, ivm_cov, ivm_cov_par,slide_prev0to80,Svtot, Evtot, Ivtot,EIR_tot, EIRout, clin_inc0to5))
     df3 <- as.data.frame(dplyr::mutate(.data = df2, ref = x, model_type = "10d-stagger"))}, simplify = F))
   return(mod_df)
 } #adding mvtot_1 and 2 and 3 so can rbind onto the rest
@@ -286,7 +286,7 @@ my_sim_mod_20d_stag <- function(){
   res_mod_out <- lapply(mod_out_list, runfun)
   mod_df <- do.call(rbind, sapply(1:(nrow(df_var_all)), function(x){
     df <- as.data.frame(res_mod_out[[x]])
-    df2 <-  as.data.frame(dplyr::select(.data = df, t, mu, mv, mvx_dead,Q0, ivm_cov, ivm_cov_par,slide_prev0to5,Svtot, Evtot, Ivtot,EIR_tot, EIRout, clin_inc0to5))
+    df2 <-  as.data.frame(dplyr::select(.data = df, t, mu, mv, mvx_dead,Q0, ivm_cov, ivm_cov_par,slide_prev0to80,Svtot, Evtot, Ivtot,EIR_tot, EIRout, clin_inc0to5))
     df3 <- as.data.frame(dplyr::mutate(.data = df2, ref = x, model_type = "20d-stagger"))}, simplify = F))
   return(mod_df)
 } #adding mvtot_1 and 2 and 3 so can rbind onto the rest
@@ -327,7 +327,7 @@ my_sim_mod_baseline_stag <- function(){
   res_mod_out <- lapply(mod_out_list, runfun)
   mod_df <- do.call(rbind, sapply(1:(nrow(df_var_all)), function(x){
     df <- as.data.frame(res_mod_out[[x]])
-    df2 <-  as.data.frame(dplyr::select(.data = df, t, mu, mv, mvx_dead,Q0, ivm_cov, ivm_cov_par,slide_prev0to5,Svtot, Evtot, Ivtot,EIR_tot, EIRout, clin_inc0to5))
+    df2 <-  as.data.frame(dplyr::select(.data = df, t, mu, mv, mvx_dead,Q0, ivm_cov, ivm_cov_par,slide_prev0to80,Svtot, Evtot, Ivtot,EIR_tot, EIRout, clin_inc0to5))
     df3 <- as.data.frame(dplyr::mutate(.data = df2, ref = x, model_type = "baseline"))}, simplify = F))
   return(mod_df)
 } #adding mvtot_1 and 2 and 3 so can rbind onto the rest
