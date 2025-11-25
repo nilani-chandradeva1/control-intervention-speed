@@ -1,14 +1,15 @@
 #plot of hazard ratio, proportion of treated groups that are lethal and time-varying proportion of population with letal dose of ivm
-
-
 require(tidyverse)
 
-facet_labels <- c("10d" = "10-day staggered MDA",
-                  "20d" = "20-day staggered MDA",
-                  "all_in_one_stag" = "Overnight MDA")
+facet_labels <- c("10d" = "10-day MDA implementation",
+                  "20d" = "20-day MDA implementation",
+                  "all_in_one_stag" = "Synchronised MDA implementation")
 
 stag_HR <- readRDS("2.ivm-stagger-distr/output/HR_staggered.rds")
 stag_cov <- readRDS("2.ivm-stagger-distr/output/prop_lethal_ivm.rds")
+
+stag_HR$stagger <- factor(stag_HR$stagger, levels = c("all_in_one_stag", "10d", "20d"))
+stag_cov$stagger <- factor(stag_cov$stagger, levels = c("all_in_one_stag", "10d", "20d"))
 
 HR_plot <- ggplot(stag_HR, aes(x = Day, y = HR, group = group))+
   geom_line(aes(col = as.factor(group), lty = as.factor(group_lab)),size = 1.1,
@@ -25,20 +26,20 @@ HR_plot <- ggplot(stag_HR, aes(x = Day, y = HR, group = group))+
     "HR_use_above1" = "black"), labels= c("Group 1", "Group 2", "Group 3", "Group average"),
     name = "Hazard ratio group"
   )+
-  labs(linetype = "Average or group-level", y = "Hazard ratio")+
+  labs(linetype = "Average or group-level", y = "Hazard ratio (HR)")+
   #ggtitle("Staggered distribution")+
   #xlim(1, 106)+
-  theme(legend.position = c(0.25, 0.7),
+  theme(legend.position = "top",
         legend.direction = "horizontal")+
   xlab("Hazard ratio")+
   xlim(-10, 107)+
-  ylim(0, 24)
+  ylim(0, 10)
 
 
 time_toxic_plot <- ggplot(stag_cov, aes(x = Day, y = prop_pop_cov))+
   geom_line(size = 1.1)+
   facet_wrap(vars(stagger), labeller = as_labeller(facet_labels))+
-  ylab("Proportion of covered group \n with HR > 1")+
+  ylab("Proportion of covered \n group with HR > 1")+
   theme_bw(base_size = 14)+
   #theme(text = element_text(size = 14))+
   scale_y_continuous(limits = c(0,1), breaks = c(0, 0.33, 0.66, 1))+
@@ -86,11 +87,13 @@ range(df_time_covs_error$lower_cov)
 df_time_covs_plot
 
 facet_labels2 <- c(
-  "10d-stagger" = "10-day staggered MDA",
-  "20d-stagger" = "20-day staggered MDA",
-  "all-in-one-stag" = "Overnight MDA"
+  "10d-stagger" = "10-day MDA implementation",
+  "20d-stagger" = "20-day MDA implementation",
+  "all-in-one-stag" = "Synchronised MDA implementation"
 )
 start <- (365*5)+200
+
+df_time_covs_plot$model_type <- factor(df_time_covs_plot$model_type, levels = c("all-in-one-stag", "10d-stagger", "20d-stagger"))
 
 time_var_cov_plot <- ggplot(df_time_covs_plot, aes(x = t-start, y = ivm_cov*100))+
   geom_line(size = 1.1)+
@@ -99,7 +102,7 @@ time_var_cov_plot <- ggplot(df_time_covs_plot, aes(x = t-start, y = ivm_cov*100)
   xlim(-10, 107)+
   xlab("Time (days) since intervention started")+
   theme_bw(base_size = 14)+
-  ylab("Proportion of population with \n lethal dose of ivermectin (%)")
+  ylab("Population (%) with \n lethal dose of ivermectin")
 
 toxic_ivm_plot <- cowplot::plot_grid(HR_plot, time_toxic_plot, time_var_cov_plot,
                                      nrow = 3, align = "v",
