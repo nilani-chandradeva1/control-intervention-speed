@@ -2,7 +2,7 @@
 #high endemicity
 
 require(tidyverse)
-
+start <- (365*5)+200
 df_distr_all <- readRDS("2.ivm-stagger-distr/output/df_distr_HR_3m_perennial.rds")
 
 model_types <-  unique(df_distr_all$model_type)
@@ -22,7 +22,8 @@ df_distr_all <- df_distr_all %>%
 unique(df_distr_all$init_EIR)
 unique(df_distr_all$model_type)
 
-distr_pals <- c('#66c2a5','#fc8d62','#8da0cb','#a6d854')
+#distr_pals <- c('#66c2a5','#fc8d62','#8da0cb',)
+distr_pals <- c('#a6d854', '#8da0cb', '#66c2a5', '#fc8d62')
 covs <- unique(df_distr_all$ivm_cov_par)
 
 df_distr <- df_distr_all %>%
@@ -55,8 +56,10 @@ mv_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = mv, col = as.factor(mod
   ylab("Mosquito density")+
   theme(legend.position = "none") +
 
-  scale_color_manual(values = distr_pals, labels = c("10 days", "20 days", "1 day"),
-                     name = "Time to complete MDA") +
+  scale_color_manual(values = distr_pals,
+                     breaks = c("baseline", "all-in-one-stag", "10d-stagger", "20d-stagger"),
+                     labels = c("No intervention", "Synchronised MDA", "10-day MDA", "20-day MDA"),
+                     name = "Scenario") +
   coord_cartesian(xlim = c(-0.25, 1))+
   xlab("Years since intervention started") +
   geom_segment(x = 0, y = 48, xend = 0, yend = 42, arrow = arrow(),
@@ -64,19 +67,22 @@ mv_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = mv, col = as.factor(mod
   geom_segment(x = second_mda/365, y = 48, xend = second_mda/365, yend = 42, arrow = arrow(),
                col = "black", size = 1.1)+
   geom_segment(x = third_mda/365, y = 48, xend = third_mda/365, yend = 42, arrow = arrow(),
-               col = "black", size = 1.1)+
-  geom_segment(x = plot_matamal/365, y = 48, xend = plot_matamal/365, yend = 42,
-               arrow = arrow(),
-               col = "blue", size = 1.1) +
-  annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 20, ymax = 42,
-           fill = "white", alpha = 0.1, col = "black")+
-  annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = 42,alpha = 0.1)
+               col = "black", size = 1.1) #+
+  #geom_segment(x = plot_matamal/365, y = 48, xend = plot_matamal/365, yend = 42,
+  #             arrow = arrow(),
+  #             col = "blue", size = 1.1) +
+  #annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 20, ymax = 42,
+  #         fill = "white", alpha = 0.1, col = "black")+
+  #annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = 42,alpha = 0.1)
 
 eir_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = EIRout, col = as.factor(model_type)))+
   geom_line(size = 1.1)+
   theme_bw(base_size = 14)+
   coord_cartesian(ylim = c(0, 0.3), xlim = c(-0.25, 1))+
-  scale_color_manual(name = "Scenario", values = distr_pals)+
+  scale_color_manual(values = distr_pals,
+                     breaks = c("baseline", "all-in-one-stag", "10d-stagger", "20d-stagger"),
+                     labels = c("No intervention", "Synchronised MDA", "10-day MDA", "20-day MDA"),
+                     name = "Scenario") +
   guides(col = "none")+
   xlim(-0.25, 1) +
   ylab("Average number of infectious bites \n per person per day (daily EIR)")+
@@ -86,43 +92,47 @@ eir_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = EIRout, col = as.facto
   geom_segment(x = second_mda/365, y = 0.28, xend = second_mda/365, yend =0.23, arrow = arrow(),
                col = "black", size = 1.1)+
   geom_segment(x = third_mda/365, y = 0.28, xend = third_mda/365, yend =0.23, arrow = arrow(),
-               col = "black", size = 1.1)+
-  geom_segment(x = plot_matamal/365, y = 0.28, xend = plot_matamal/365, yend = 0.23,
-               arrow = arrow(),
-               col = "blue", size = 1.1)+
-  annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = 0.23,
-           fill = "white", alpha = 0.1, col = "black")+
-  annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = 0.23,alpha = 0.1)
+               col = "black", size = 1.1)#+
+  #geom_segment(x = plot_matamal/365, y = 0.28, xend = plot_matamal/365, yend = 0.23,
+  #             arrow = arrow(),
+  #             col = "blue", size = 1.1)+
+  #annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = 0.23,
+  #         fill = "white", alpha = 0.1, col = "black")+
+  #annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = 0.23,alpha = 0.1)
 
-prev_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = slide_prev0to5*100, col = as.factor(model_type)))+
+prev_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = slide_prev0to80*100, col = as.factor(model_type)))+
   geom_line(size = 1.1)+
   theme_bw(base_size = 14)+
   coord_cartesian(ylim = c(0, 75), , xlim = c(-0.25, 1))+
-  scale_color_manual(name = "Scenario", values = distr_pals,
-                     labels = c("10-day MDA", "20-day MDA", "Overnight MDA", "Baseline"))+
+  scale_color_manual(values = distr_pals,
+                     breaks = c("baseline", "all-in-one-stag", "10d-stagger", "20d-stagger"),
+                     labels = c("No intervention", "Synchronised MDA", "10-day MDA", "20-day MDA"),
+                     name = "Scenario") +
   #guides(col = "none")+
-  theme(legend.position = c(0.4, 0.3))+
+  theme(legend.position = c(0.4, 0.2))+
   xlab("Years since intervention started")+
-  ylab("Slide prevalence (%) in children \n under 5-years-old") +
-  geom_segment(x = 0, y = 73, xend = 0, yend =65, arrow = arrow(),
+  ylab("All-age slide prevalence (%)") +
+  geom_segment(x = 0, y = 57, xend = 0, yend =50, arrow = arrow(),
                col = "black", size = 1.1)+
-  geom_segment(x = second_mda/365, y = 73, xend = second_mda/365, yend =65, arrow = arrow(),
+  geom_segment(x = second_mda/365, y = 57, xend = second_mda/365, yend =50, arrow = arrow(),
                col = "black", size = 1.1)+
-  geom_segment(x = third_mda/365, y = 73, xend = third_mda/365, yend =65, arrow = arrow(),
+  geom_segment(x = third_mda/365, y = 57, xend = third_mda/365, yend =50, arrow = arrow(),
                col = "black", size = 1.1)+
-  geom_segment(x = plot_matamal/365, y = 73, xend = plot_matamal/365, yend = 65,
+  geom_segment(x = plot_matamal/365, y = 57, xend = plot_matamal/365, yend = 50,
                arrow = arrow(),
-               col = "blue", size = 1.1)+
-  annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = 64,
-           fill = "white", alpha = 0.1, col = "black")+
-  annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = 64,alpha = 0.1)
+               col = "blue", size = 1.1)#+
+  #annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = 64,
+  #         fill = "white", alpha = 0.1, col = "black")+
+  #annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = 64,alpha = 0.1)
 
 
 inc_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = clin_inc0to5*1000, col = as.factor(model_type)))+
   geom_line(size = 1.1)+
   theme_bw(base_size = 14)+
-  scale_color_manual(name = "Scenario", values = distr_pals,
-                     labels = c("10-day MDA", "20-day MDA", "Overnight MDA", "Baseline"))+
+  scale_color_manual(values = distr_pals,
+                     breaks = c("baseline", "all-in-one-stag", "10d-stagger", "20d-stagger"),
+                     labels = c("No intervention", "Synchronised MDA", "10-day MDA", "20-day MDA"),
+                     name = "Scenario") +
   guides(col = "none")+
   ylab("Clinical incidence in children \n under 5-years-old, per 1000 persons")+
   coord_cartesian(xlim = c(-0.25, 1), ylim = c(0, 7.5))+
@@ -133,14 +143,14 @@ inc_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = clin_inc0to5*1000, col
                col = "black", size = 1.1)+
   geom_segment(aes(x = third_mda/365, y = 7, xend = third_mda/365, yend =6), arrow = arrow(),
                col = "black", size = 1.1)+
-  geom_segment(aes(x = plot_matamal/365, y = 7, xend = plot_matamal/365, yend = 6),
-               arrow = arrow(),
-               col = "blue", size = 1.1) +
+  #geom_segment(aes(x = plot_matamal/365, y = 7, xend = plot_matamal/365, yend = 6),
+  #             arrow = arrow(),
+  #             col = "blue", size = 1.1) +
   annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = 6,
            fill = "white", alpha = 0.1, col = "black")+
   annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = 6,alpha = 0.1)
 
-dynamics <- cowplot::plot_grid(mv_plot, eir_plot, inc_plot, prev_plot, align = "v",
+dynamics <- cowplot::plot_grid(mv_plot, eir_plot, prev_plot, inc_plot, align = "v",
                                labels = c("A", "B", "C", "D"))
 
 #then look at epi impact, at different times to understand the influence of the timing of the measurement
@@ -169,21 +179,21 @@ df_distr_wide_setting <- left_join(df_distr_wide_setting_ivm,df_distr_wide_setti
                                                                                                     "init_EIR"))
 #prevalence measurement
 df_distr_wide_setting_prev_ivm<- df_distr_all %>%
-  select(t, ref, init_EIR, model_type, ivm_cov_par, slide_prev0to5) %>%
+  select(t, ref, init_EIR, model_type, ivm_cov_par, slide_prev0to80) %>%
   group_by(ref) %>%
   group_modify(~ {
     df_wide <- .x %>%
-      pivot_wider(names_from = model_type, values_from = slide_prev0to5)
+      pivot_wider(names_from = model_type, values_from = slide_prev0to80)
   }) %>%
   select(-baseline)
 
 df_distr_wide_setting_prev_baseline <- df_distr_all %>%
   filter(model_type == "baseline") %>%
-  select(t,ref,init_EIR, model_type, slide_prev0to5) %>%
+  select(t,ref,init_EIR, model_type, slide_prev0to80) %>%
   group_by(ref) %>%
   group_modify(~ {
     df_wide <- .x %>%
-      pivot_wider(names_from = model_type, values_from = slide_prev0to5)
+      pivot_wider(names_from = model_type, values_from = slide_prev0to80)
   })
 
 df_distr_wide_setting_prev <- left_join(df_distr_wide_setting_prev_ivm,
@@ -244,8 +254,14 @@ impact_measurements_long <- impact_measurements %>%
 
 levels_x <- unique(impact_measurements_long$scenario)
 
-distr_pals <- c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')
-distr_pals2 <- distr_pals[1:4]
+#distr_pals <- c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')
+distr_pals <- c('#a6d854', '#8da0cb', '#66c2a5', '#fc8d62')
+distr_pals2 <- distr_pals[2:4]
+
+
+int_order <- c("impact_all_in_stag", "impact_10d", "impact_20d")
+impact_measurements_long$intervention <- factor(impact_measurements_long$intervention,
+                                                levels = int_order)
 
 cov_error <- impact_measurements_long %>%
   ungroup() %>%
@@ -279,12 +295,15 @@ impact_main_plot <- ggplot() +
   theme(legend.position = c(0.7, 0.8)) +
   guides(fill = "none")+
   scale_fill_manual(
-    values = distr_pals2, name = "Scenario")+
+    values = distr_pals2, name = "Scenario",
+    breaks = c("impact_all_in_stag", "impact_10d", "impact_20d"),
+    labels = c("Synchronised MDA", "10-day MDA", "20-day MDA")
+    )+
   xlab("Time of measurement") +
   ylab("Efficacy (%)") +
   scale_x_discrete(labels = c(
     "bohemia" = "Incidence U5s (start to 6m later)",
-    "matamal" = "Prevalence U5s (1m after last MDA)",
+    "matamal" = "All-age prevalence (1m after last MDA)",
     "Once year since start" = "Incidence U5s (start to 1y later)"
   ))
 
@@ -306,5 +325,5 @@ dynamics_perennial <- cowplot::plot_grid(mv_plot, eir_plot, prev_plot, inc_plot,
 plot_perennial <- cowplot::plot_grid(dynamics_perennial, impact_main_plot,
                                      labels = c("", "E"))
 
-ggsave(plot_perennial, file = "2.ivm-stagger-distr/plots/fig_3_plot_perennial.pdf")
-
+ggsave(plot_perennial, file = "2.ivm-stagger-distr/plots/fig_3_plot_perennial.pdf", dpi = 100)
+ggsave(plot_perennial, file = "2.ivm-stagger-distr/plots/fig_3_plot_perennial.png")
