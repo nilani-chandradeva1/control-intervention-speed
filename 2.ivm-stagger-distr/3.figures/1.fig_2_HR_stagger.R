@@ -109,4 +109,4 @@ toxic_ivm_plot <- cowplot::plot_grid(HR_plot, time_toxic_plot, time_var_cov_plot
                                      labels = c("A", "B", "C"))
 
 
-ggsave(toxic_ivm_plot, file = "2.ivm-stagger-distr/plots/fig_2_toxic_ivm_plots.pdf")
+ggsave(toxic_ivm_plot, file = "2.ivm-stagger-distr/plots/SM_fig_toxic_ivm_plots.pdf")
