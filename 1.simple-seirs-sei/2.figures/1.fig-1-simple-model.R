@@ -149,7 +149,26 @@ prev_eff_plot <- ggplot(df_all_main_compare, aes(x = t-start_int, y = eff_prev, 
                       name = "Time taken to kill target mosquitoes")+
   coord_cartesian(xlim = c(-10, 250))
 
-prev_eff_plot2 <- ggplot(df_all_main_compare, aes(x = t-start_int, y = eff_prev, col = as.factor(delta_t), lty = as.factor(constant_emergence)))+
+df_all_main_compare %>%
+  filter(t == 110+28) %>%
+  group_by(delta_t, constant_emergence) %>%
+  summarise(eff_prev = eff_prev)
+
+
+df_all_main_compare %>%
+  group_by(delta_t, constant_emergence) %>%
+  filter(eff_prev == max(eff_prev)) %>%
+  select(delta_t, constant_emergence, t, eff_prev)
+
+df_all_main_compare %>%
+  group_by(delta_t, constant_emergence) %>%
+  filter(eff_prev < 0) %>%
+  slice_min(t, with_ties = FALSE) %>%
+  select(delta_t, constant_emergence, t, eff_prev)
+
+
+
+asprev_eff_plot2 <- ggplot(df_all_main_compare, aes(x = t-start_int, y = eff_prev, col = as.factor(delta_t), lty = as.factor(constant_emergence)))+
   geom_line(linewidth = 0.9)+
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
   theme_bw(base_size = 14)+
@@ -270,6 +289,63 @@ impact_plot <- ggplot(summary_impact, aes(x = factor(time_period, levels = c("10
   theme(legend.position = c(0.8, 0.9))+
   scale_fill_manual(values = scenario_pals)+
   guides(fill = "none")
+
+##mosquito pop sizes at key times
+model_base_long2 <- base_scenarios_main %>%
+  crossing(time_ranges) %>%
+  filter(t >= start & t <= end)
+
+d10_since_start <- int_scenarios_main %>%
+  filter(t == 110) %>%
+  filter(delta_t == 10) %>%
+  group_by(delta_t, constant_emergence) %>%
+  select(M) %>%
+  mutate(M0 = 2000,
+         prop_M_killed = ((M0-M)/M0)*100,
+         t = "10d since start")
+
+d30_since_start <- int_scenarios_main %>%
+  filter(t == 140) %>%
+  filter(delta_t == 30) %>%
+  group_by(delta_t, constant_emergence) %>%
+  select(M) %>%
+  mutate(M0 = 2000,
+         prop_M_killed = ((M0-M)/M0)*100,
+         t = "30d since start")
+
+d90_since_start <- int_scenarios_main %>%
+  filter(t == 200) %>%
+  filter(delta_t == 90) %>%
+  group_by(delta_t, constant_emergence) %>%
+  select(M) %>%
+  mutate(M0 = 2000,
+         prop_M_killed = ((M0-M)/M0)*100,
+         t = "90d since start")
+
+mosq_pop_tab <- do.call("rbind", list(d10_since_start, d30_since_start, d90_since_start))
+
+
+model_int_long2 <- int_scenarios_main %>%
+  select(t,delta_t, m0, M0, M, delta_D, prop_killed, constant_emergence) %>%
+  filter(prop_killed == 0.95) %>%
+  crossing(time_ranges) %>%
+  filter(t >= start & t <= end)
+
+model_int_summary <- model_int_long %>%
+  group_by(delta_t, m0, M0, delta_D, prop_killed, time_period, constant_emergence) %>%
+  summarise(tot_cases_int = sum(C_daily), .groups = "drop")
+
+#compare difference in incidence
+summary_impact <- left_join(model_int_summary, model_base_epi) %>% #at each time period, for each scenario, what is rel diff in prev
+  mutate(abs_diff_cases = tot_cases_baseline-tot_cases_int,
+         rel_diff_cases = ((tot_cases_baseline-tot_cases_int)/tot_cases_baseline)*100,
+         constant_emergence = case_when(constant_emergence == TRUE ~ "Constant emergence",
+                                        constant_emergence == FALSE ~ "Logistic growth"))
+
+
+
+
+
 
 library(ggpattern)
 
