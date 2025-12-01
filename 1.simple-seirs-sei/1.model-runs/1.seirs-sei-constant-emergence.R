@@ -162,7 +162,8 @@ malaria_model <- odin::odin({
   deriv(I_v) <- if (t >= tau_real && t <= (tau_real + delta_t)) sigma_v * E_v - mu_v*I_v - psi*I_v else sigma_v * E_v - mu_v*I_v
   deriv(D) <-   if (t >= tau_real && t <= (tau_real + delta_t)) psi*S_v + psi*E_v + psi*I_v else 0
 
-
+  deriv(ever_lived) <- if (t >= tau_real && t <= (tau_real + delta_t)) phi else phi
+  deriv(nat_die) <- if (t >= tau_real && t <= (tau_real + delta_t)) mu_v else mu_v
 
   init_S_h <- user()
   init_E_h <- user()
@@ -174,6 +175,8 @@ malaria_model <- odin::odin({
   init_E_v <- user()
   init_I_v <- user()
   init_D <- user()
+  init_ever_lived <- user()
+  init_nat_die <- user()
 
   initial(S_h) <- init_S_h
   initial(E_h) <- init_E_h
@@ -188,6 +191,8 @@ malaria_model <- odin::odin({
   initial(E_v) <- init_E_v
   initial(I_v) <- init_I_v
   initial(D) <- init_D
+  initial(ever_lived) <- init_ever_lived
+  initial(nat_die) <- init_nat_die
 
   M <- S_v + E_v + I_v
   m <- M/N
@@ -237,7 +242,10 @@ param_grid <- tibble(
   delta_t = grid$delta_t,
   psi = grid$psi,
   M0 = grid$M0,
-  mu_v = grid$mu_v
+  mu_v = grid$mu_v,
+  ever_lived = grid$ever_lived,
+  nat_die = grid$nat_die
+
 )
 
 model_results <- vector("list", nrow(param_grid))
@@ -250,6 +258,8 @@ for (i in seq_len(nrow(param_grid))){
   in_psi <- param_grid$psi[i]
   in_M0 <- param_grid$M0[i]
   in_mu_v <- param_grid$mu_v[i]
+  in_ever_lived <- param_grid$ever_lived[i]
+  in_nat_die <- param_grid$nat_die[i]
 
   in_params <- params_base
   in_params$delta_t <- in_delta_t
@@ -258,6 +268,8 @@ for (i in seq_len(nrow(param_grid))){
   in_params$mu_v <- in_mu_v
   #in_params$psi <- in_psi
   in_params$psi <- psi_vec[i]
+  in_params$ever_lived <- in_ever_lived
+  in_params$nat_die <- in_nat_die
 
   #update the mosquito-human ratio
   in_params$m0 <- in_M0/in_params$N0
@@ -279,7 +291,8 @@ for (i in seq_len(nrow(param_grid))){
   #store output
   model_results[[i]] <- cbind(as.data.frame(out), delta_t = in_delta_t, psi = in_psi,
                               delta_D = in_delta_D, M0 = in_M0, m0 = in_params$m0,
-                              mu_v = in_mu_v)
+                              mu_v = in_mu_v, ever_lived = in_ever_lived,
+                              nat_die = in_nat_die)
 }
 
 model_results_df <- dplyr::bind_rows(model_results)
