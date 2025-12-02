@@ -50,8 +50,8 @@ endemic_eqm <- function(params) {
     c(
       init_S_h = S_h_star, init_E_h = E_h_star, init_I_h = I_h_star,
       init_R_h = R_h_star, init_C = 0,
-      init_S_v = S_v_star, init_E_v = E_v_star, init_I_v = I_v_star,
-      init_D = 0
+      init_S_v = S_v_star, init_E_v = E_v_star, init_I_v = I_v_star, init_ever_lived = 0,
+      init_D = 0, init_nat_die = 0
     )
   })
 }
@@ -84,6 +84,9 @@ malaria_model <- odin::odin({
     psi*(S_v + E_v + I_v)
   else 0
 
+  deriv(ever_lived) <- if (t >= tau_real && t <= (tau_real + delta_t)) phi else phi
+  deriv(nat_die) <- if (t >= tau_real && t <= (tau_real + delta_t)) mu_v*S_v + mu_v*E_v + mu_v*I_v else mu_v*S_v + mu_v*E_v + mu_v*I_v
+
   # Initial conditions
   init_S_h <- user(); initial(S_h) <- init_S_h
   init_E_h <- user(); initial(E_h) <- init_E_h
@@ -95,6 +98,8 @@ malaria_model <- odin::odin({
   init_E_v <- user(); initial(E_v) <- init_E_v
   init_I_v <- user(); initial(I_v) <- init_I_v
   init_D   <- user(); initial(D)   <- init_D
+  init_ever_lived <- user(); initial(ever_lived) <- init_ever_lived
+  init_nat_die <- user(); initial(nat_die) <- init_nat_die
 
   N  <- S_h + E_h + I_h + R_h
   M  <- S_v + E_v + I_v
@@ -293,7 +298,7 @@ for (i in seq_len(nrow(param_grid))) {
     "init_S_v","init_E_v","init_I_v","init_D",
     "N0","M0","mu_h","beta_hv","omega_h","sigma_h","gamma_h",
     "constant_emergence","beta_vh","mu_v","sigma_v","psi","delta_t",
-    "n_times","int_on","ttt"
+    "n_times","int_on","ttt", "init_ever_lived", "init_nat_die"
   )
 
   missing <- setdiff(required_params, names(in_params))
@@ -324,7 +329,8 @@ model_results_df <- model_results_df %>%
          M = S_v+E_v+I_v,
          constant_emergence = FALSE) #carrying capacity
 
-saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_carrying_capacity.rds")
+#saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_carrying_capacity.rds")
+saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_carrying_capacity2.rds")
 
 #some plots to check all is well#
 
@@ -407,7 +413,7 @@ for (i in seq_len(nrow(param_grid_base))) {
     "init_S_v","init_E_v","init_I_v","init_D",
     "N0","M0","mu_h","beta_hv","omega_h","sigma_h","gamma_h",
     "constant_emergence","beta_vh","mu_v","sigma_v","psi","delta_t",
-    "n_times","int_on","ttt"
+    "n_times","int_on","ttt", "init_ever_lived", "init_nat_die"
   )
 
   missing <- setdiff(required_params, names(in_params))
@@ -439,4 +445,5 @@ model_results_base_df <- model_results_base_df %>%
          M = S_v+E_v+I_v,
          constant_emergence = FALSE) #carrying capacity
 
-saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_carrying_capacity.rds")
+#saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_carrying_capacity.rds")
+saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_carrying_capacity2.rds")
