@@ -142,7 +142,8 @@ endemic_eqm <- function(params_base){
     # Return vector of variables at the endemic equilibrium
     c(
       init_S_h = S_h_star, init_E_h = E_h_star, init_I_h = I_h_star, init_R_h = R_h_star, init_C = 0,
-      init_S_v = S_v_star, init_E_v = E_v_star, init_I_v = I_v_star, init_D = 0
+      init_S_v = S_v_star, init_E_v = E_v_star, init_I_v = I_v_star, init_D = 0, init_ever_lived = 0,
+      init_nat_die = 0
     )
 
   })
@@ -162,8 +163,8 @@ malaria_model <- odin::odin({
   deriv(I_v) <- if (t >= tau_real && t <= (tau_real + delta_t)) sigma_v * E_v - mu_v*I_v - psi*I_v else sigma_v * E_v - mu_v*I_v
   deriv(D) <-   if (t >= tau_real && t <= (tau_real + delta_t)) psi*S_v + psi*E_v + psi*I_v else 0
 
-  deriv(ever_lived) <- if (t >= tau_real && t <= (tau_real + delta_t)) phi else phi
-  deriv(nat_die) <- if (t >= tau_real && t <= (tau_real + delta_t)) mu_v else mu_v
+  deriv(ever_lived) <- if (t >= tau_real && t <= (tau_real + delta_t)) phi else phi #M0*mu_v
+  deriv(nat_die) <- if (t >= tau_real && t <= (tau_real + delta_t)) mu_v*S_v + mu_v*E_v + mu_v*I_v else mu_v*S_v + mu_v*E_v + mu_v*I_v #M*mu_v (in absence of extra int, M=M0)
 
   init_S_h <- user()
   init_E_h <- user()
@@ -242,9 +243,7 @@ param_grid <- tibble(
   delta_t = grid$delta_t,
   psi = grid$psi,
   M0 = grid$M0,
-  mu_v = grid$mu_v,
-  ever_lived = grid$ever_lived,
-  nat_die = grid$nat_die
+  mu_v = grid$mu_v
 
 )
 
@@ -258,8 +257,7 @@ for (i in seq_len(nrow(param_grid))){
   in_psi <- param_grid$psi[i]
   in_M0 <- param_grid$M0[i]
   in_mu_v <- param_grid$mu_v[i]
-  in_ever_lived <- param_grid$ever_lived[i]
-  in_nat_die <- param_grid$nat_die[i]
+
 
   in_params <- params_base
   in_params$delta_t <- in_delta_t
@@ -268,8 +266,7 @@ for (i in seq_len(nrow(param_grid))){
   in_params$mu_v <- in_mu_v
   #in_params$psi <- in_psi
   in_params$psi <- psi_vec[i]
-  in_params$ever_lived <- in_ever_lived
-  in_params$nat_die <- in_nat_die
+
 
   #update the mosquito-human ratio
   in_params$m0 <- in_M0/in_params$N0
@@ -291,11 +288,11 @@ for (i in seq_len(nrow(param_grid))){
   #store output
   model_results[[i]] <- cbind(as.data.frame(out), delta_t = in_delta_t, psi = in_psi,
                               delta_D = in_delta_D, M0 = in_M0, m0 = in_params$m0,
-                              mu_v = in_mu_v, ever_lived = in_ever_lived,
-                              nat_die = in_nat_die)
+                              mu_v = in_mu_v)
 }
 
 model_results_df <- dplyr::bind_rows(model_results)
+
 unique(model_results_df$delta_D)
 unique(model_results_df$M0)
 unique(model_results_df$mu_v)
@@ -395,11 +392,13 @@ unique(model_results_df_all$prop_killed)
 model_results_df <- model_results_df %>%
   mutate(constant_emergence = TRUE)
 
-saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_constant_emergence_TRUE.rds")
+#saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_constant_emergence_TRUE.rds")
+saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_constant_emergence_TRUE_2.rds")
 
 #save output of baseline
 
 model_results_base_df <- model_results_base_df %>%
   mutate(constant_emergence = TRUE)
 
-saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_constant_emergence_TRUE.rds")
+#saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_constant_emergence_TRUE.rds")
+saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_constant_emergence_TRUE_2.rds")
