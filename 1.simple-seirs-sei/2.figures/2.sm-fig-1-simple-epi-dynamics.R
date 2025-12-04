@@ -61,6 +61,19 @@ start_int <- 100
 scenario_pals <- c('#1b9e77','#d95f02','#7570b3') #colour for each product
 scenario_pals2 <- c('#e7298a', scenario_pals) #baseline colour
 
+ggplot(df_all_main, aes(x = t-start_int, y = M, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
+  geom_line(linewidth = 0.9)+
+  geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
+  theme_bw(base_size = 14)+
+  #guides(col = "none", lty = "none")+
+  labs(col = "Duration of killing (days)")+
+  ylab("mosquito density")+
+  #scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
+  #                     values = c("solid", "dotdash"))+
+  xlab("Time since intervention started (days)")+
+  scale_colour_manual(values = scenario_pals2)#+
+  #coord_cartesian(xlim = c(-10, 250), ylim = c(0,25))
+
 inf_mosq <- ggplot(df_all_main, aes(x = t-start_int, y = (I_v/M)*100, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
   geom_line(linewidth = 0.9)+
   geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
@@ -72,7 +85,7 @@ inf_mosq <- ggplot(df_all_main, aes(x = t-start_int, y = (I_v/M)*100, col = as.f
                         values = c("solid", "dotdash"))+
   xlab("Time since intervention started (days)")+
   scale_colour_manual(values = scenario_pals2)+
-  coord_cartesian(xlim = c(-10, 300), ylim = c(0,25))
+  coord_cartesian(xlim = c(-10, 250), ylim = c(0,25))
 
 susceptible_people <- ggplot(df_all_main, aes(x = t-start_int, y = (S_h/N)*100, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
   geom_line(linewidth = 0.9)+
@@ -81,17 +94,38 @@ susceptible_people <- ggplot(df_all_main, aes(x = t-start_int, y = (S_h/N)*100, 
   theme(
     text = element_text(size = 14),
     legend.position = c(0.9, 0.6))+
-  #guides(col = "none", lty = "none")+
+  guides(col = "none", lty = "none")+
   labs(col = "Duration of killing (days)")+
   ylab("Susceptible humans (%)")+
   scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
                         values = c("solid", "dotdash"))+
   xlab("Time since intervention started (days)")+
   scale_colour_manual(values = scenario_pals2)+
-  coord_cartesian(xlim = c(-10, 300), ylim = c(0,10))
+  coord_cartesian(xlim = c(-10, 250), ylim = c(0,10))
 
-sens_dynamics_epi <- cowplot::plot_grid(inf_mosq, susceptible_people,
-                                        labels = c("A", "B"),
+Re_t_plot <- ggplot(df_all_main, aes(x = t-start_int, y = Re_t, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
+  geom_line(linewidth = 0.9)+
+  geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
+  theme_bw(base_size = 14)+
+  theme(legend.position = "right",
+        legend.direction = "vertical")+
+  ylab(expression("Effective reproduction number " ~ R[e]))+
+  #guides(col = "none", linetype = "none")+
+  scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
+                        values = c("solid", "dotdash"))+
+  xlim(-10,250)+
+  xlab("Time since intervention started (days)")+
+  scale_colour_manual(values = scenario_pals2, labels = c("No intervention", "10-day killing period", "30-day killing period", "90-day killing period"),
+                      name = "Scenario")+
+  coord_cartesian(ylim = c(0, 2.5), xlim = c(-10, 250))
+
+legend <- cowplot::get_legend(Re_t_plot + theme(legend.position = "right"))
+
+Re_t_plot_no_legend <- Re_t_plot + theme(legend.position = "none")
+
+sens_dynamics_epi <- cowplot::plot_grid(inf_mosq, susceptible_people, Re_t_plot_no_legend,
+                                        legend,
+                                        labels = c("A", "B", "C", ""),
                                         nrow = 2,
                                         align = "v")
 
