@@ -75,7 +75,7 @@ mosq_killed_plot <- ggplot(df_all_main, aes(x = t-start_int, y = D, col = as.fac
                        values = c("solid", "dotdash"))+
   xlab("Time since intervention started (days)")+
   scale_colour_manual(values = scenario_pals2,
-                      labels = c("Baseline", "10 day killing period", "30 day killing period", "90 day killing period"),
+                      labels = c("No intervention", "10-day killing period", "30-day killing period", "90-day killing period"),
                       name = "Scenario")  +
   coord_cartesian(xlim = c(-10, 250), ylim = c(0,2000))
 
@@ -108,7 +108,8 @@ prevalence_plot <- ggplot(df_all_main, aes(x = t-start_int, y = (I_h/N)*100, col
   theme(legend.position = c(0.6, 0.5))+
   scale_colour_manual(values = scenario_pals2, labels = c("Baseline (no intervention)", "10 days", "30 days", "90 days"),
                       name = "Time taken to kill target mosquitoes")+
-  coord_cartesian(xlim = c(-10, 250))
+  coord_cartesian(xlim = c(-10, 250))+
+  guides(col = "none", lty = "none")
 
 
 df_all_main_baseline <- df_all_main %>%
@@ -222,7 +223,7 @@ Re_t_plot <- ggplot(df_all_main, aes(x = t-start_int, y = Re_t, col = as.factor(
 
 
 #TC: move Re plot to the SM
-ggsave(Re_t_plot, file = "1.simple-seirs-sei/plots/Re_t_plot_SM.pdf")
+#ggsave(Re_t_plot, file = "1.simple-seirs-sei/plots/Re_t_plot_SM.pdf")
 
 
 
@@ -342,18 +343,13 @@ summary_impact <- left_join(model_int_summary, model_base_epi) %>% #at each time
          constant_emergence = case_when(constant_emergence == TRUE ~ "Constant emergence",
                                         constant_emergence == FALSE ~ "Logistic growth"))
 
-
-
-
-
-
 library(ggpattern)
-
 impact_plot_main <- ggplot(summary_impact,
-                           aes(x = factor(time_period, levels = c("10d", "30d", "90d", "250d")),
-                               y = log(rel_diff_cases + 1),
-                               fill = as.factor(delta_t),
-                               pattern = as.factor(constant_emergence))) +
+       aes(x = factor(time_period, levels = c("10d", "30d", "90d", "250d")),
+           #y = rel_diff_cases,
+           y = sqrt(rel_diff_cases),
+           fill = as.factor(delta_t),
+           pattern = as.factor(constant_emergence))) +
   geom_bar_pattern(
     stat = "identity",
     position = position_dodge(),
@@ -365,7 +361,10 @@ impact_plot_main <- ggplot(summary_impact,
     pattern_key_scale_factor = 0.5
   ) +
   theme_minimal() +
-  scale_y_continuous(limits = c(0, 4), labels = c(0, 10, 20, 30, 40)) +
+  scale_y_continuous(
+  #  breaks = log(c(0, 10, 20, 30, 40) + 1),
+    labels = c(0, 4, 16, 36)
+  )+
   ylab("Percentage (%) cases averted \n due to intervention")+
   xlab("Time period (days) over \n which incidence measured since intervention started") +
   labs(fill = "Time to complete MDA (days)",
@@ -375,13 +374,54 @@ impact_plot_main <- ggplot(summary_impact,
         text = element_text(size = 14)) +
   scale_fill_manual(values = scenario_pals) +
   scale_pattern_manual(values = c("Logistic growth" = "none",
-                                  "Constant emergence" = "stripe"))+
+                                  "Constant emergence" = "stripe"),
+                       breaks = c("Logistic growth", "Constant emergence"))+
   guides(pattern_spacing = 0.5,
          pattern = guide_legend(
-    override.aes = list(fill = "white"), # Force fill color in legend
-  ),
-  #fill = guide_legend(override.aes = list(pattern = "none")),
-  fill = "none")
+           override.aes = list(fill = "white"), # Force fill color in legend
+         ),
+         #fill = guide_legend(override.aes = list(pattern = "none")),
+         fill = "none")
+
+
+
+
+
+
+#impact_plot_main <- ggplot(summary_impact,
+#                           aes(x = factor(time_period, levels = c("10d", "30d", "90d", "250d")),
+#                               y = log(rel_diff_cases + 1),
+#                               fill = as.factor(delta_t),
+#                               pattern = as.factor(constant_emergence))) +
+#  geom_bar_pattern(
+#    stat = "identity",
+#    position = position_dodge(),
+#    colour = "black",                # Border of bars
+#    pattern_colour = "black",        # Pattern line color
+#    pattern_fill = NA,               # Transparent so bar fill shows
+#    pattern_density = 0.4,
+#    pattern_spacing = 0.05,
+#    pattern_key_scale_factor = 0.5
+#  ) +
+#  theme_minimal() +
+#  scale_y_continuous(limits = c(0, 4), labels = c(0, 10, 20, 30, 40)) +
+#  ylab("Percentage (%) cases averted \n due to intervention")+
+#  xlab("Time period (days) over \n which incidence measured since intervention started") +
+#  labs(fill = "Time to complete MDA (days)",
+#       pattern = "Adult emergence") +
+#  theme_bw(base_size = 14)+
+#  theme(legend.position = c(0.7, 0.8),
+#        text = element_text(size = 14)) +
+#  scale_fill_manual(values = scenario_pals) +
+#  scale_pattern_manual(values = c("Logistic growth" = "none",
+#                                  "Constant emergence" = "stripe"),
+#                       breaks = c("Logistic growth", "Constant emergence"))+
+#  guides(pattern_spacing = 0.5,
+#         pattern = guide_legend(
+#    override.aes = list(fill = "white"), # Force fill color in legend
+#  ),
+#  #fill = guide_legend(override.aes = list(pattern = "none")),
+#  fill = "none")
 
 summary_impact %>%
   filter(time_period == "250d")
@@ -403,6 +443,8 @@ figure_dynamic_impact <- cowplot::plot_grid(mosq_killed_plot, mosq_pop_plot,
 
 
 ggsave(figure_dynamic_impact, file = "1.simple-seirs-sei/plots/fig_1_simple_model_plot.pdf")
+
+
 
 figure_dynamic_impact_pres <- cowplot::plot_grid(mosq_killed_plot, mosq_pop_plot,
                                             prev_eff_plot2,
