@@ -94,8 +94,8 @@ summary_impact2 <- left_join(model_int_summary2, model_base_epi2) %>% #at each t
 
 impact_plot_sens <- ggplot(summary_impact2,
                            aes(x = factor(time_period, levels = c("10d", "30d", "90d", "250d")),
-                               #y = sqrt(rel_diff_cases),
-                               y = rel_diff_cases,
+                               y = sqrt(rel_diff_cases),
+                               #y = rel_diff_cases,
                                fill = as.factor(delta_t),
                                pattern = as.factor(constant_emergence))) +
   geom_bar_pattern(
@@ -109,22 +109,26 @@ impact_plot_sens <- ggplot(summary_impact2,
     pattern_key_scale_factor = 0.5
   ) +
   theme_bw(base_size = 14) +
-  scale_y_sqrt(limits = c(0, 3.5),
-               breaks = c(0, 0.5, 1, 1.5, 2.0, 2.5, 3.5), #original scale breaks
-               labels = c(0, 0.5, 1, 1.5, 2.0, 2.5, 3.5)) +
+  scale_y_continuous(labels = c(0.00, 0.25, 1.00, 2.25),
+                     breaks = c(0, 0.5, 1, 1.5))+
+  #scale_y_sqrt(limits = c(0, 3.5),
+  #             breaks = c(0, 0.5, 1, 1.5, 2.0, 2.5, 3.5), #original scale breaks
+  #             labels = c(0, 0.5, 1, 1.5, 2.0, 2.5, 3.5)) +
   ylab("Efficacy (%)") +
   #ylim(0,2.25)+
-  xlab("Time period (days) over which incidence measured since intervention start") +
+  xlab("Time period (days) over \n which incidence measured since intervention start") +
   labs(fill = "Time to complete MDA (days)",
        pattern = "Adult emergence") +
   theme(legend.position = c(0.6, 0.65)) +
   scale_fill_manual(values = scenario_pals) +
   scale_pattern_manual(values = c("Logistic growth" = "none",
-                                  "Constant emergence" = "stripe"))+
+                                  "Constant emergence" = "stripe"),
+                       breaks = c("Logistic growth", "Constant emergence"))+
   guides(pattern = guide_legend(
     override.aes = list(fill = "white"), # Force fill color in legend
   ),
-  fill = guide_legend(override.aes = list(pattern = "none")))
+  fill = guide_legend(override.aes = list(pattern = "none")))+
+  guides(fill = "none")
 
 
 
@@ -146,10 +150,10 @@ sens_mosq_killed_plot <- ggplot(df_all_main_sens, aes(x = t-start_int, y = D, co
   theme_bw(base_size = 14)+
   guides(col = "none", lty = "none")+
   labs(col = "Duration of killing (days)")+
-  ylab("Number of mosquitoes killed by \n intervention")+
+  ylab("Cumulative number of mosquitoes \n killed by intervention")+
   scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
                         values = c("solid", "dotdash"))+
-  xlim(-10,300)+
+  xlim(-10,250)+
   xlab("Time since intervention started (days)")+
   scale_colour_manual(values = scenario_pals2)+
   ylim(0, 2e5)
@@ -164,7 +168,7 @@ sens_daily_inc_plot <- ggplot(df_all_main_sens, aes(x = t-start_int, y = C_daily
   ylab("Daily incidence")+
   scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
                         values = c("solid", "dotdash"))+
-  xlim(-10,300)+
+  xlim(-10,250)+
   xlab("Time since intervention started (days)")+
   scale_colour_manual(values = scenario_pals2)
 
@@ -178,12 +182,12 @@ sens_prevalence_plot <- ggplot(df_all_main_sens, aes(x = t-start_int, y = (I_h/N
   #ylim(0, 24)+
   scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
                         values = c("solid", "dotdash"))+
-  xlim(-10,300)+
+  xlim(-10,250)+
   xlab("Time since intervention started (days)")+
   #labs(col = "Time to complete MDA")+
   theme(legend.position = c(0.5, 0.5))+
-  scale_colour_manual(values = scenario_pals2, labels = c("Baseline (no intervention)", "10 days", "30 days", "90 days"),
-                      name = "Time taken to kill target mosquitoes")+
+  scale_colour_manual(values = scenario_pals2, labels = c("No intervention", "10-day killing period", "30-day killing period", "90-day killing period"),
+                      name = "Scenario")+
   ylim(0, 24)
 
 
@@ -197,7 +201,7 @@ sens_mosq_pop_plot <- ggplot(df_all_main_sens, aes(x = t-start_int, y = M, col =
   ylim(0,2e5)+
   scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
                         values = c("solid", "dotdash"))+
-  xlim(-10,300)+
+  xlim(-10,250)+
   xlab("Time since intervention started (days)")+
   scale_colour_manual(values = scenario_pals2)
 
@@ -210,7 +214,7 @@ sens_Re_t_plot <- ggplot(df_all_main_sens, aes(x = t-start_int, y = Re_t, col = 
   guides(col = "none", linetype = "none")+
   scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
                         values = c("solid", "dotdash"))+
-  xlim(-10,300)+
+  xlim(-10,250)+
   xlab("Time since intervention started (days)")+
   scale_colour_manual(values = scenario_pals2)+
   ylim(0,3)
@@ -219,6 +223,8 @@ figure_dynamics_sens_impact <- cowplot::plot_grid(sens_mosq_killed_plot, sens_mo
                                            sens_daily_inc_plot, sens_prevalence_plot,
                                            sens_Re_t_plot,impact_plot_sens,
                                            align = "v",
-                                           labels = c("A", "B", "C", "D", "E"))
+                                           labels = c("A", "B", "C", "D", "E", "F"))
+
+
 
 ggsave(figure_dynamics_sens_impact, file = "1.simple-seirs-sei/plots/sm_fig_2_simple_model_plot_sens_high_endemicity.pdf")
