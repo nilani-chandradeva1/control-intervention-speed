@@ -26,7 +26,7 @@ mv_plot_on_time <- ggplot(df_distr_seasonal, aes(x = (t - start)/365, y = mv, co
                      labels = c("No intervention", "Synchronised MDA", "10-day MDA", "20-day MDA"),
                      name = "Scenario") +
   coord_cartesian(xlim = c(-0.25,1), ylim = c(0, 200))+
-  xlab("Years since start of well-timed MDA implementation") +
+  xlab("Years since start of on-time MDA") +
   geom_segment(x = 0, y = max_mv+25, xend = 0, yend = max_mv, arrow = arrow(length = unit(0.3, "cm")),
                col = "black", size = 1.1)+ #first MDA
   geom_segment(x = second_mda/365, y = max_mv+25, xend = second_mda/365, yend = max_mv, arrow = arrow(length = unit(0.3, "cm")),
@@ -53,7 +53,7 @@ prev_plot_on_time <- ggplot(df_distr_seasonal, aes(x = (t - start)/365, y = slid
                      name = "Scenario") +
   theme(legend.position = c(0.45, 0.2))+
   coord_cartesian(xlim = c(-0.25,1), ylim = c(-15, 70))+
-  xlab("Years since start of well-timed MDA implementation") +
+  xlab("Years since start of on-time MDA") +
   ylab("All-age slide prevalence (%)") +
   geom_segment(x = 0, y = max_prev+10, xend = 0, yend =max_prev, arrow = arrow(length = unit(0.3, "cm")),
                col = "black", size = 1.1)+
@@ -90,8 +90,8 @@ mv_plot_late <- ggplot(df_distr_seasonal_late, aes(x = (t - start)/365, y = mv, 
                      name = "Scenario") +
   guides(col = "none")+
   coord_cartesian(xlim = c(-0.25,1), ylim = c(0, 200))+
-  ylab("Average number of infectious bites \n per person per day (daily EIR)")+
-  xlab("Years since start of well-timed MDA implementation") +
+  ylab("Mosquito density")+
+  xlab("Years since start of on-time MDA") +
   geom_segment(x = 60/365, y = max_mv+25, xend = 60/365, yend =max_mv, arrow = arrow(length = unit(0.3, "cm")),
                col = "black", size = 1.1)+
   geom_segment(x = second_mda/365, y = max_mv+25, xend = second_mda/365, yend =max_mv, arrow = arrow(length = unit(0.3, "cm")),
@@ -118,7 +118,7 @@ prev_plot_late <- ggplot(df_distr_seasonal_late, aes(x = (t - start)/365, y = sl
   guides(col = "none")+
   coord_cartesian(xlim = c(-0.25,1), ylim = c(-15, 70))+
   ylab("All-age prevalence (%)")+
-  xlab("Years since start of well-timed MDA implementation") +
+  xlab("Years since start of on-time MDA") +
   geom_segment(x = 60/365, y = max_prev+10, xend = 60/365, yend =max_prev, arrow = arrow(length = unit(0.3, "cm")),
                col = "black", size = 1.1)+
   geom_segment(x = second_mda/365, y = max_prev+10, xend = second_mda/365, yend =max_prev, arrow = arrow(length = unit(0.3, "cm")),
@@ -155,22 +155,30 @@ covs_error_df <- rbind(covs_error_on_time, cov_error_late) %>%
   mutate(scenario = case_when(scenario == "Once year since start" ~ "One_year_since_start",
                               TRUE ~ scenario))
 
+covs_error_df$intervention <- factor(covs_error_df$intervention, levels = c("impact_all_in_stag",
+                                                                            "impact_10d",
+                                                                            "impact_20d"))
+
+covs_error_df$seasonality <- factor(covs_error_df$seasonality, levels = c("seasonal-on-time","seasonal-on-late"))
+
 impact_df2 <- impact_df %>%
   filter(init_EIR == 100 & ivm_cov_par == 0.7) %>%
   mutate(scenario = case_when(scenario == "Once year since start" ~ "One_year_since_start",
                               TRUE ~ scenario))
 
-impact_df2$seasonality <- factor(impact_df2$seasonality, levels = c("seasonal-on-time", "seasonal-on-late"))
+impact_df2$seasonality <- factor(impact_df2$seasonality, levels = c("seasonal-on-time","seasonal-on-late"))
+impact_df2$intervention <- factor(impact_df2$intervention, levels = c("impact_all_in_stag", "impact_10d", "impact_20d"))
+
 
 require(ggpattern)
 
 
 distr_pals <- c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')
 
-head(impa)
+#saveRDS(impact_df2, file = "2.ivm-stagger-distr/output/TB_impact_df2.rds")
+#saveRDS(covs_error_df, file = "2.ivm-stagger-distr/output/TB_covs_error_df.rds")
 
-
-ggplot()  +
+impact_plot <- ggplot()  +
   geom_bar_pattern(data = impact_df2,
                    aes(
                      x = factor(scenario),
@@ -179,46 +187,61 @@ ggplot()  +
                      pattern = factor(seasonality,
                                       levels = c("seasonal-on-time","seasonal-on-late"))
                    ),
-    stat = "identity",
-    position = position_dodge2(preserve = "single", padding = 0.1),
-    color = "black",
-    pattern_colour = "black",
-    pattern_fill = NA,
-    pattern_density = 0.4,
-    pattern_spacing = 0.04,
-    pattern_key_scale_factor = 0.5
+                   stat = "identity",
+                   position = position_dodge(preserve = "single", 0.9),
+                   #position = position_dodge(),
+                   color = "black",
+                   pattern_colour = "black",
+                   pattern_fill = NA,
+                   pattern_density = 0.4,
+                   pattern_spacing = 0.04,
+                   pattern_key_scale_factor = 0.5
   ) +
   geom_errorbar(
     data = covs_error_df,
     aes(
       x = factor(scenario),
+      #col = as.factor(intervention),
       ymin = cov_low_0.5,
       ymax = cov_high_0.9,
-      fill = as.factor(intervention),
-      pattern = factor(seasonality,
-                       levels = c("seasonal-on-time","seasonal-on-late"))
+      #group = interaction(seasonality, intervention)  # match bars
+      group = interaction(seasonality, intervention),
     ),
     width = 0.2,
-    position = position_dodge2(preserve = "single", padding = 0.1),
+    col = "black",
+    #position = position_dodge(),
+    position = position_dodge(preserve = "single", 0.9),
     size = 1.1
-  )
+  ) +
   scale_fill_manual(
     values = c("impact_all_in_stag" = distr_pals[3],
                "impact_10d" = distr_pals[1],
                "impact_20d" = distr_pals[2]),
     breaks = c("impact_all_in_stag", "impact_10d", "impact_20d"),
     labels = c(
-      "impact_all_in_stag"="1 day to complete MDA",
+      "impact_all_in_stag"="Synchronised MDA",
       "impact_10d"="10 days to complete MDA",
       "impact_20d"="20 days to complete MDA"
     ),
     name = "Scenario"
   ) +
+ #scale_colour_manual(
+ #  values = c("impact_all_in_stag" = distr_pals[3],
+ #             "impact_10d" = distr_pals[1],
+ #             "impact_20d" = distr_pals[2]),
+ #  breaks = c("impact_all_in_stag", "impact_10d", "impact_20d"),
+ #  labels = c(
+ #    "impact_all_in_stag"="1 day to complete MDA",
+ #    "impact_10d"="10 days to complete MDA",
+ #    "impact_20d"="20 days to complete MDA"
+ #  ),
+ #  name = "Scenario"
+ #)+
   scale_pattern_manual(
     values = c("seasonal-on-time"="none",
                "seasonal-on-late"="stripe"),
     breaks = c("seasonal-on-time","seasonal-on-late"),
-    labels = c("On time", "Late (by 2 months)"),
+    labels = c("On-time", "Late (by 2 months)"),
     name = "Timing of MDA in seasonal setting"
   ) +
   guides(
@@ -236,9 +259,16 @@ ggplot()  +
   ylab("Efficacy (%)") +
   xlab("Time of measurement") +
   scale_x_discrete(labels = c(
-  "bohemia" = "Incidence U5s \n (start to 6m later)",
-  "matamal" = "All-age prevalence \n (1m after last MDA)",
-  "One_year_since_start" = "Incidence U5s \n (start to 1y later)"
-))
+    "bohemia" = "Incidence U5s \n (start to 6m later)",
+    "matamal" = "All-age prevalence \n (1m after last MDA)",
+    "One_year_since_start" = "Incidence U5s \n (start to 1y later)"
+  ))
+
+seasonal_figure <- cowplot::plot_grid(dynamics, impact_plot, labels = c("", "E"))
 
 
+
+
+
+ggsave(seasonal_figure, file = "2.ivm-stagger-distr/plots/seasonality_main_figure.png")
+#ggsave(seasonal_figure, file = "2.ivm-stagger-distr/plots/seasonality_main_figure.pdf")
