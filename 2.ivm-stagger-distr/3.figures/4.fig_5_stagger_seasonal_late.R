@@ -384,15 +384,27 @@ impact_main_plot <- ggplot() +
 
 
 impact_measurements_long2 <- impact_measurements_long
+
+impact_measurements_long2 <- impact_measurements_long2 %>%
+  mutate(seasonality = "seasonal-on-late")
+
+
 impact_measurements_long2$intervention <- factor(impact_measurements_long2$intervention,
                                                  levels = c("impact_all_in_stag",
-                                                            "impact_10d",
-                                                            "impact_20d"))
+                                                            "impact_10d","impact_20d"))
+
+saveRDS(impact_measurements_long2, file = "2.ivm-stagger-distr/output/impact_seasonal_late.rds")
+
 cov_error2 <- cov_error
 cov_error2$intervention <- factor(cov_error2$intervention,
                                   levels = c("impact_all_in_stag",
                                              "impact_10d",
                                              "impact_20d"))
+
+saveRDS(cov_error2, file = "2.ivm-stagger-distr/output/impact_seasonal_late_covs_error.rds")
+
+
+
 distr_pals <- c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')
 
 impact_main_plot_pres <- ggplot() +
