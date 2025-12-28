@@ -302,9 +302,9 @@ impact_main_plot <- ggplot() +
   xlab("Time of measurement") +
   ylab("Efficacy (%)") +
   scale_x_discrete(labels = c(
-    "bohemia" = "Incidence U5s (start to 6m later)",
-    "matamal" = "All-age prevalence (1m after last MDA)",
-    "Once year since start" = "Incidence U5s (start to 1y later)"
+    "bohemia" = "Incidence U5s \n (start to 6m later)",
+    "matamal" = "All-age prevalence \n (1m after last MDA)",
+    "Once year since start" = "Incidence U5s \n (start to 1y later)"
   ))
 
 impact_measurements_long %>%
