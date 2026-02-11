@@ -329,8 +329,8 @@ model_results_df <- model_results_df %>%
          M = S_v+E_v+I_v,
          constant_emergence = FALSE) #carrying capacity
 
-#saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_carrying_capacity.rds")
-saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_carrying_capacity2.rds")
+saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_carrying_capacity.rds")
+#saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_carrying_capacity2.rds")
 
 #some plots to check all is well#
 
@@ -445,5 +445,5 @@ model_results_base_df <- model_results_base_df %>%
          M = S_v+E_v+I_v,
          constant_emergence = FALSE) #carrying capacity
 
-#saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_carrying_capacity.rds")
-saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_carrying_capacity2.rds")
+saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_carrying_capacity.rds")
+#saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_carrying_capacity2.rds")

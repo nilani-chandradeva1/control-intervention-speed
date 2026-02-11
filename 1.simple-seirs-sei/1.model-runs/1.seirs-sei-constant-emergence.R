@@ -392,13 +392,13 @@ unique(model_results_df_all$prop_killed)
 model_results_df <- model_results_df %>%
   mutate(constant_emergence = TRUE)
 
-#saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_constant_emergence_TRUE.rds")
-saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_constant_emergence_TRUE_2.rds")
+saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_constant_emergence_TRUE.rds")
+#saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_constant_emergence_TRUE_2.rds")
 
 #save output of baseline
 
 model_results_base_df <- model_results_base_df %>%
   mutate(constant_emergence = TRUE)
 
-#saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_constant_emergence_TRUE.rds")
-saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_constant_emergence_TRUE_2.rds")
+saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_constant_emergence_TRUE.rds")
+#saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_constant_emergence_TRUE_2.rds")

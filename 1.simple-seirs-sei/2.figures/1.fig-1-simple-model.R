@@ -8,6 +8,8 @@ df_2_emerge_T <- readRDS("1.simple-seirs-sei/output/model_results_df_constant_em
 df_3_emerge_F <- readRDS("1.simple-seirs-sei/output/model_results_base_df_carrying_capacity.rds") #baseline Logistic growth
 df_4_emerge_F <- readRDS("1.simple-seirs-sei/output/model_results_df_carrying_capacity.rds") #int Logistic growth
 
+#fixing the formatting of incidence: convert cumulative to daily increments
+
 df_1_emerge_T <- df_1_emerge_T %>%
   select(-label) %>%
   mutate(prop_killed = delta_D/M0) %>%
@@ -153,7 +155,7 @@ prev_eff_plot <- ggplot(df_all_main_compare, aes(x = t-start_int, y = eff_prev, 
 df_all_main_compare %>%
   filter(t == 110+28) %>%
   group_by(delta_t, constant_emergence) %>%
-  summarise(eff_prev = eff_prev)
+  summarise(eff_prev = eff_prev) ##why 28 days??
 
 
 df_all_main_compare %>%
@@ -169,21 +171,21 @@ df_all_main_compare %>%
 
 
 
-asprev_eff_plot2 <- ggplot(df_all_main_compare, aes(x = t-start_int, y = eff_prev, col = as.factor(delta_t), lty = as.factor(constant_emergence)))+
-  geom_line(linewidth = 0.9)+
-  geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
-  theme_bw(base_size = 14)+
-  theme(
-    text = element_text(size = 14))+
-  ylab("Percentage reduction (%) in \n prevalence")+
-  scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
-                        values = c("solid", "dotdash"))+
-  xlab("Time since intervention started (days)")+
-  theme(legend.position = c(0.6, 0.7))+
-  scale_colour_manual(values = scenario_pals2[2:4], labels = c("Basline","10 days", "30 days", "90 days"),
-                      name = "Time taken to kill target mosquitoes")+
-  coord_cartesian(xlim = c(-10, 250))+
-  guides(colour = "none", lty = "none")
+#asprev_eff_plot2 <- ggplot(df_all_main_compare, aes(x = t-start_int, y = eff_prev, col = as.factor(delta_t), lty = as.factor(constant_emergence)))+
+#  geom_line(linewidth = 0.9)+
+#  geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
+#  theme_bw(base_size = 14)+
+#  theme(
+#    text = element_text(size = 14))+
+#  ylab("Percentage reduction (%) in \n prevalence")+
+#  scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
+#                        values = c("solid", "dotdash"))+
+#  xlab("Time since intervention started (days)")+
+#  theme(legend.position = c(0.6, 0.7))+
+#  scale_colour_manual(values = scenario_pals2[2:4], labels = c("Basline","10 days", "30 days", "90 days"),
+#                      name = "Time taken to kill target mosquitoes")+
+#  coord_cartesian(xlim = c(-10, 250))+
+#  guides(colour = "none", lty = "none")
 
 
 mosq_pop_plot <- ggplot(df_all_main, aes(x = t-start_int, y = M, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
@@ -222,8 +224,7 @@ Re_t_plot <- ggplot(df_all_main, aes(x = t-start_int, y = Re_t, col = as.factor(
  coord_cartesian(ylim = c(0, 2.5))
 
 
-#TC: move Re plot to the SM
-#ggsave(Re_t_plot, file = "1.simple-seirs-sei/plots/Re_t_plot_SM.pdf")
+ggsave(Re_t_plot, file = "1.simple-seirs-sei/plots/Re_t_plot_SM.pdf")
 
 
 
@@ -242,7 +243,7 @@ figure_dynamics <- cowplot::plot_grid(mosq_killed_plot, mosq_pop_plot,
 
 #measure impact at different time periods
 
-eqm_point <- 350
+eqm_point <- 350 #dynamics reach eqm around here
 
 #assign time periods
 time_ranges <- tibble(
@@ -444,7 +445,7 @@ figure_dynamic_impact <- cowplot::plot_grid(mosq_killed_plot, mosq_pop_plot,
 
 ggsave(figure_dynamic_impact, file = "1.simple-seirs-sei/plots/fig_1_simple_model_plot.pdf")
 
-
+####can remove the below for the github version###
 
 figure_dynamic_impact_pres <- cowplot::plot_grid(mosq_killed_plot, mosq_pop_plot,
                                             prev_eff_plot2,

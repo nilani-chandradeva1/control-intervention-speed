@@ -12,7 +12,7 @@ base_10d <- model_out_constant_base %>%
   mutate(prop_killed_all = delta_D/M0) %>%
   filter(m0 == 2 & M0 == 2000) %>%
   group_by(delta_t, m0, constant_emergence) %>%
-  filter(t == start_base + time_periods[1]) %>%
+  filter(t == start_base + time_periods[1]) %>% #for each time period, summarise the number of mosquitoes that have ever-lived, naturally died and were killed by the intervention
   summarise(ever_lived = ever_lived,
             nat_die = nat_die,
             D = round(D),
