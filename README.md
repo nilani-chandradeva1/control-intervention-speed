@@ -37,28 +37,3 @@ Journal of Infectious Diseases*
 et al., 2020, Lancet Infectious Diseases*
 (<https://www.thelancet.com/journals/laninf/article/PIIS1473-3099(19)30633-4/fulltext>).
 It is this model that *ivRmectin* contains, and allows users to run.
-
-## IMPORTANT NOTES
-
-:warning: This code is released with no support and currently is neither
-finished or complete. It is **NOT** ready for users outside Imperial
-College to run models. If you are interested in using this code, you
-**MUST** contact one of the package authors first to discuss
-requirements.
-
-:warning: This model is in active development and so parameter names and
-behaviours, as well as output file formats, will change without notice.
-
-# Copyright and Licensing
-
-The source code is derived from previous work developing a deterministic
-version of the Imperial College malaria model. Copyright for this work
-lies with Joel Hellewell, Hannah Slater and OJ Watson. The lead
-developers on this project are Joel Hellewell, Hannah Slater, OJ Watson,
-Juliette Unwin, Ellie Sherrard Smith and Rich Fitzjohn. Additional code
-and elaborations to the model contained in this repo are from Hannah
-Slater and Charlie Whittaker and Copyright for these elaborations lies
-with them. For all this code, the default copyright license applies,
-meaning that **no one may reproduce, distribute or create derivative
-works from this work.**
-test HS
