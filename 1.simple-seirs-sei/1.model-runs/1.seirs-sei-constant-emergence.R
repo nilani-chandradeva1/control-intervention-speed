@@ -1,6 +1,8 @@
 #simple SEIRS-SEI model for killing a target number of mosquitoes (delta_D) in a given time period
 #use optim to get best-fitting value of psi (additional mortality rate) to kill these mosquitoes (varies for each time period)
-#extreme density dependence (constant emergence)
+#assuming that adults emerge into the population at a constant rate (phi = mu*M0)
+
+
 
 require(odin)
 require(tidyverse)
@@ -38,6 +40,8 @@ params_base <- list(
 
 params_base$m0 <- with(params_base, {M0 / N0}) # Initial mosquito to human ratio
 params_base$constant_emergence <- constant_emergence
+
+
 write_rds(params_base, file = "1.simple-seirs-sei/output/params_base.rds")
 
 #PSI calculations####
@@ -393,7 +397,6 @@ model_results_df <- model_results_df %>%
   mutate(constant_emergence = TRUE)
 
 saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_constant_emergence_TRUE.rds")
-#saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_constant_emergence_TRUE_2.rds")
 
 #save output of baseline
 
@@ -401,4 +404,3 @@ model_results_base_df <- model_results_base_df %>%
   mutate(constant_emergence = TRUE)
 
 saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_constant_emergence_TRUE.rds")
-#saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_constant_emergence_TRUE_2.rds")

@@ -4,7 +4,7 @@ library(tidyverse)
 # ------------------------------------------------
 # 1. Flag for emergence type (0 = constant, 1 = logistic)
 # ------------------------------------------------
-constant_emergence <- 1
+constant_emergence <- 1 #mosquitoes emerge into the population according to a logistic growth model
 
 # ------------------------------------------------
 # 2. Base parameters (named list)
@@ -330,8 +330,6 @@ model_results_df <- model_results_df %>%
          constant_emergence = FALSE) #carrying capacity
 
 saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_carrying_capacity.rds")
-#saveRDS(model_results_df, file = "1.simple-seirs-sei/output/model_results_df_carrying_capacity2.rds")
-
 #some plots to check all is well#
 
 model_results_main <- model_results_df %>%
@@ -446,4 +444,3 @@ model_results_base_df <- model_results_base_df %>%
          constant_emergence = FALSE) #carrying capacity
 
 saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_carrying_capacity.rds")
-#saveRDS(model_results_base_df, file = "1.simple-seirs-sei/output/model_results_base_df_carrying_capacity2.rds")

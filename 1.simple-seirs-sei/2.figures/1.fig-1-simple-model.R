@@ -1,6 +1,7 @@
 #figures for extreme density dependence and Logistic growth.
 
 require(tidyverse)
+require(ggpattern)
 
 df_1_emerge_T <- readRDS("1.simple-seirs-sei/output/model_results_base_df_constant_emergence_TRUE.rds")  #baseline constant emergence T
 df_2_emerge_T <- readRDS("1.simple-seirs-sei/output/model_results_df_constant_emergence_TRUE.rds") #int constant emergence T
@@ -153,9 +154,9 @@ prev_eff_plot <- ggplot(df_all_main_compare, aes(x = t-start_int, y = eff_prev, 
   coord_cartesian(xlim = c(-10, 250))
 
 df_all_main_compare %>%
-  filter(t == 110+28) %>%
+  filter(t == 110+28) %>% #look at this time point for a trial measuring efficacy about a month (4 weeks) after intervention took place e.g. MATAMAL
   group_by(delta_t, constant_emergence) %>%
-  summarise(eff_prev = eff_prev) ##why 28 days??
+  summarise(eff_prev = eff_prev)
 
 
 df_all_main_compare %>%
@@ -169,23 +170,6 @@ df_all_main_compare %>%
   slice_min(t, with_ties = FALSE) %>%
   select(delta_t, constant_emergence, t, eff_prev)
 
-
-
-#asprev_eff_plot2 <- ggplot(df_all_main_compare, aes(x = t-start_int, y = eff_prev, col = as.factor(delta_t), lty = as.factor(constant_emergence)))+
-#  geom_line(linewidth = 0.9)+
-#  geom_vline(xintercept = 0, linetype = "dashed", linewidth = 1.1)+
-#  theme_bw(base_size = 14)+
-#  theme(
-#    text = element_text(size = 14))+
-#  ylab("Percentage reduction (%) in \n prevalence")+
-#  scale_linetype_manual(name = "Adult emergence", labels = c("Logistic growth", "Constant emergence"),
-#                        values = c("solid", "dotdash"))+
-#  xlab("Time since intervention started (days)")+
-#  theme(legend.position = c(0.6, 0.7))+
-#  scale_colour_manual(values = scenario_pals2[2:4], labels = c("Basline","10 days", "30 days", "90 days"),
-#                      name = "Time taken to kill target mosquitoes")+
-#  coord_cartesian(xlim = c(-10, 250))+
-#  guides(colour = "none", lty = "none")
 
 
 mosq_pop_plot <- ggplot(df_all_main, aes(x = t-start_int, y = M, col = as.factor(delta_t), linetype = as.factor(constant_emergence)))+
@@ -384,53 +368,10 @@ impact_plot_main <- ggplot(summary_impact,
          #fill = guide_legend(override.aes = list(pattern = "none")),
          fill = "none")
 
-
-
-
-
-
-#impact_plot_main <- ggplot(summary_impact,
-#                           aes(x = factor(time_period, levels = c("10d", "30d", "90d", "250d")),
-#                               y = log(rel_diff_cases + 1),
-#                               fill = as.factor(delta_t),
-#                               pattern = as.factor(constant_emergence))) +
-#  geom_bar_pattern(
-#    stat = "identity",
-#    position = position_dodge(),
-#    colour = "black",                # Border of bars
-#    pattern_colour = "black",        # Pattern line color
-#    pattern_fill = NA,               # Transparent so bar fill shows
-#    pattern_density = 0.4,
-#    pattern_spacing = 0.05,
-#    pattern_key_scale_factor = 0.5
-#  ) +
-#  theme_minimal() +
-#  scale_y_continuous(limits = c(0, 4), labels = c(0, 10, 20, 30, 40)) +
-#  ylab("Percentage (%) cases averted \n due to intervention")+
-#  xlab("Time period (days) over \n which incidence measured since intervention started") +
-#  labs(fill = "Time to complete MDA (days)",
-#       pattern = "Adult emergence") +
-#  theme_bw(base_size = 14)+
-#  theme(legend.position = c(0.7, 0.8),
-#        text = element_text(size = 14)) +
-#  scale_fill_manual(values = scenario_pals) +
-#  scale_pattern_manual(values = c("Logistic growth" = "none",
-#                                  "Constant emergence" = "stripe"),
-#                       breaks = c("Logistic growth", "Constant emergence"))+
-#  guides(pattern_spacing = 0.5,
-#         pattern = guide_legend(
-#    override.aes = list(fill = "white"), # Force fill color in legend
-#  ),
-#  #fill = guide_legend(override.aes = list(pattern = "none")),
-#  fill = "none")
-
 summary_impact %>%
   filter(time_period == "250d")
 0.7-0.310 #delta_t 10 Logistic growth - delta_t 90 Logistic growth
 0.391-0.290 #delta_t 10 Logistic growth - delta_t 90 constant emergence
-
-
-
 
 #figure_dynamic_impact <- cowplot::plot_grid(figure_dynamics, impact_plot_main,
 #                                            labels = c("", "E"))
@@ -441,16 +382,4 @@ figure_dynamic_impact <- cowplot::plot_grid(mosq_killed_plot, mosq_pop_plot,
                                            labels = c("A", "B", "C", "D", "E", "F"),
                                            nrow = 2, ncol = 3, align = "v")
 
-
-
 ggsave(figure_dynamic_impact, file = "1.simple-seirs-sei/plots/fig_1_simple_model_plot.pdf")
-
-####can remove the below for the github version###
-
-figure_dynamic_impact_pres <- cowplot::plot_grid(mosq_killed_plot, mosq_pop_plot,
-                                            prev_eff_plot2,
-                                            impact_plot_main,
-                                            labels = c("A", "B", "C", "D"),
-                                            nrow = 2, ncol = 2, align = "v")
-ggsave(figure_dynamic_impact_pres, file = "1.simple-seirs-sei/plots/fig_1_simple_model_plot_pres.pdf")
-ggsave(figure_dynamic_impact_pres, file = "1.simple-seirs-sei/plots/fig_1_simple_model_plot_pres.png")
