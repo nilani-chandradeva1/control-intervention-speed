@@ -1,5 +1,7 @@
-model_out_lg <-readRDS("1.simple-seirs-sei/output/model_results_df_carrying_capacity2.rds")
-model_out_lg_base <- readRDS("1.simple-seirs-sei/output/model_results_base_df_carrying_capacity2.rds")
+#used to generate estimates of entomological efficacy in Table 1 of manuscript
+
+model_out_lg <-readRDS("1.simple-seirs-sei/output/model_results_df_carrying_capacity.rds")
+model_out_lg_base <- readRDS("1.simple-seirs-sei/output/model_results_base_df_carrying_capacity.rds")
 
 
 

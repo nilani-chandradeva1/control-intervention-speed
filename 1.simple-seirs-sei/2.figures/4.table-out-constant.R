@@ -1,6 +1,9 @@
 require(tidyverse)
-model_out_constant <-readRDS("1.simple-seirs-sei/output/model_results_df_constant_emergence_TRUE_2.rds")
-model_out_constant_base <- readRDS("1.simple-seirs-sei/output/model_results_base_df_constant_emergence_TRUE_2.rds")
+
+#Used to generate estimates of entomological efficacy in Table 1
+
+model_out_constant <-readRDS("1.simple-seirs-sei/output/model_results_df_constant_emergence_TRUE.rds")
+model_out_constant_base <- readRDS("1.simple-seirs-sei/output/model_results_base_df_constant_emergence_TRUE.rds")
 
 start_base <- 0
 

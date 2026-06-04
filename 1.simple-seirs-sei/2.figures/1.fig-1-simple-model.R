@@ -15,14 +15,14 @@ df_1_emerge_T <- df_1_emerge_T %>%
   select(-label) %>%
   mutate(prop_killed = delta_D/M0) %>%
   group_by(delta_t, m0, M0, delta_D) %>%
-  mutate(C0_daily = c(C0[1], diff(C0))) %>%
+  mutate(C0_daily = c(C0[1], diff(C0))) %>% #to convert from cumulative incidence to daily incidence
   ungroup()
 
 df_2_emerge_T <- df_2_emerge_T %>%
   select(-label) %>%
   mutate(prop_killed = delta_D/M0) %>%
   group_by(delta_t, m0, M0, delta_D, prop_killed) %>%
-  mutate(C_daily = c(C[1], diff(C))) %>%
+  mutate(C_daily = c(C[1], diff(C))) %>% #to convert from cumulative incidence to daily incidence
   ungroup()
 
 df_3_emerge_F <- df_3_emerge_F %>%
@@ -276,7 +276,6 @@ impact_plot <- ggplot(summary_impact, aes(x = factor(time_period, levels = c("10
   scale_fill_manual(values = scenario_pals)+
   guides(fill = "none")
 
-##mosquito pop sizes at key times
 model_base_long2 <- base_scenarios_main %>%
   crossing(time_ranges) %>%
   filter(t >= start & t <= end)
@@ -308,7 +307,7 @@ d90_since_start <- int_scenarios_main %>%
          prop_M_killed = ((M0-M)/M0)*100,
          t = "90d since start")
 
-mosq_pop_tab <- do.call("rbind", list(d10_since_start, d30_since_start, d90_since_start))
+mosq_pop_tab <- do.call("rbind", list(d10_since_start, d30_since_start, d90_since_start)) #outputting some stats
 
 
 model_int_long2 <- int_scenarios_main %>%
