@@ -1,9 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ivRmectin <img src="man/Figures/ivRmectin_logo.PNG" align="right" height="138.5" />
-
-## Modelling the influence of the duration of effectiveness and time taken to implement vector control interventions for vector-borne diseases. 
+# Modelling the influence of the duration of effectiveness and time taken to implement vector control interventions for vector-borne diseases. 
 
 Authors: Nilani Chandradeva*, Andrew C. Glover, Charles Whittaker, Joseph D. Challenger, Hannah C. Slater**, Ellie Sherrard-Smith** & Thomas S. Churcher**
 
