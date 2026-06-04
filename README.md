@@ -16,7 +16,7 @@ Within each folder, scripts are numbered in the order they should be run in. Out
 Please install the following packages using these instructions:
 `install.packages(c(
   "odin",
-  repos = c("https://mrc-ide.r-universe.dev", "https://cloud.r-project.org"), "tidyverse")`
+  repos = c("https://mrc-ide.r-universe.dev", "https://cloud.r-project.org"), "tidyverse"))`
 
 The work presented here builds on previously conducted work using the ivRmectin package (https://github.com/mrc-ide/ivrmectin), described below.
 
