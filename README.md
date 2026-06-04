@@ -3,7 +3,7 @@
 
 # ivRmectin <img src="man/Figures/ivRmectin_logo.PNG" align="right" height="138.5" />
 
-## Killing me softly or swiftly? Modelling the impact of fast vs. staggered distributions of vector control interventions on malaria transmission dynamics. 
+## Modelling the influence of the duration of effectiveness and time taken to implement vector control interventions for vector-borne diseases. 
 
 Authors: Nilani Chandradeva*, Andrew C. Glover, Charles Whittaker, Joseph D. Challenger, Hannah C. Slater**, Ellie Sherrard-Smith** & Thomas S. Churcher**
 
@@ -11,7 +11,7 @@ Corresponding author*: Nilani Chandradeva (nilani.chandradeva@gmail.com)
 **: Joint senior authors
 
 The scripts for this analysis are found in the following folders : `1.simple-seirs-sei` and `2.ivm-stagger-distr`. Odin models within the `inst` folder are called from scripts in these two folders.
-Within each folder, scripts are numbered in the order they should be run in. Output generated from each analysis are saved in the `output` folder and will be called from this folder if required later on. All figures, made using scripts in the `figures` folder, are saved in `plots`
+Within each folder, scripts are numbered in the order they should be run in. Output generated from each analysis are saved in the `output` folder and will be called from this folder if required later on. All figures, made using scripts in the `figures` folder, are saved in `plots`. This work builds on previously conducted work using the ivRmectin package (https://github.com/mrc-ide/ivrmectin), described below.
 
 <!-- badges: start -->
 
