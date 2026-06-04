@@ -14,9 +14,11 @@ The scripts for this analysis are found in the following folders : `1.simple-sei
 Within each folder, scripts are numbered in the order they should be run in. Output generated from each analysis are saved in the `output` folder and will be called from this folder if required later on. All figures, made using scripts in the `figures` folder, are saved in `plots`. 
 
 Please install the following packages using these instructions:
-`install.packages(c(
-  "odin",
-  repos = c("https://mrc-ide.r-universe.dev", "https://cloud.r-project.org"), "tidyverse"))`
+`install.packages(c("devtools","tidyverse", "ggpattern"))
+devtools::install_github("mrc-ide/odin", upgrade = FALSE)`
+
+If you see the following message, type `no`: 
+`Do you want to install from sources the packages which need compilation? (Yes/no/cancel)`
 
 The work presented here builds on previously conducted work using the ivRmectin package (https://github.com/mrc-ide/ivrmectin), described below.
 
