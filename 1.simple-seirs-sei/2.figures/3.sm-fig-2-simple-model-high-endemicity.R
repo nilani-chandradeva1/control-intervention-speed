@@ -138,6 +138,7 @@ int_scenarios_sens <- int_scenarios %>%
 base_scenarios_sens <- base_scenarios %>%
   filter(M0 == M0_vec[1])
 
+#checking the baseline scenario
 ggplot(base_scenarios_sens, aes(x = t, y = M, col = as.factor(constant_emergence)))+
   geom_line()
 

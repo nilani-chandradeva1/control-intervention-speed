@@ -1,4 +1,6 @@
-#generate hazard ratio curves for staggered distributions of ivermectin 3x300mcg/kg dosage
+#In this study, we simulate prolonged MDA campaigns through modifications to the ivermectin-induced hazard ratio (that elevates mortality rate) and introducing a time-vary coverage paramter
+
+#generate hazard ratio curves for prolonged MDA distributions of ivermectin 3x300mcg/kg dosage
 #staggered distr: distribute MDA with 11 days or 21 days.
 #MDA is conducted monthly, for 3 months.
 #compare to "overnight" distributions (not staggered)
