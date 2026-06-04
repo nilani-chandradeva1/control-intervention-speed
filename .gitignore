@@ -2,15 +2,3 @@
 .Rhistory
 .RData
 .Ruserdata
-.*csv
-.xlsx
-plots/*
-*.rds
-*.png
-*.pdf
-analysis/biting_LLINS/*
-analysis/exploring_interactions/*
-
-data/*
-analysis/esa-analysis/output/*
-.positai
