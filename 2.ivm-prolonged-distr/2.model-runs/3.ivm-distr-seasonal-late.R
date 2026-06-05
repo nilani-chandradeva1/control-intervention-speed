@@ -159,7 +159,6 @@ df_mod_all_stag <- my_sim_mod_all_stag()
 checking <- df_mod_all_stag %>%
   filter(ref == 2)
 
-
 ivm_parms_all_stag$IVRM_start[2025:2085]
 checking$ivm_cov[2024:2055]
 ivm_parms_all_stag$haz[2025:2055]
@@ -188,7 +187,7 @@ df_mod_compare %>%
     tot_mv = sum(mv))
 
 #expect mv to match, but they do not: small discrepancy when ivermectin is turned off (from day 24 after start)
-#I think driven by how the solver handles jumps - prop_human_HR is suddenly changing to 0 again?
+#I think driven by how the solver handles jumps - prop_human_HR is suddenly changing to 0 again
 
 unique(df_mod_compare$ref)
 
@@ -353,5 +352,4 @@ df_mod_baseline_stag <- my_sim_mod_baseline_stag()
 
 df_mod_distr <- do.call("rbind", list(df_mod_10d_stag, df_mod_20d_stag, df_mod_all_stag, df_mod_all, df_mod_baseline_stag))
 
-write_rds(df_mod_distr, file = "2.ivm-stagger-distr/output/df_distr_HR_3m_seasonal_late.rds")
-
+write_rds(df_mod_distr, file = "2.ivm-prolonged-distr/output/df_distr_HR_3m_seasonal_late.rds")
