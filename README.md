@@ -14,7 +14,7 @@ The scripts for this analysis are found in the following folders : `1.simple-sei
 Within each folder, scripts are numbered in the order they should be run in. Output generated from each analysis are saved in the `output` folder and will be called from this folder if required later on. All figures, made using scripts in the `figures` folder, are saved in `plots`. 
 
 Please install the following packages using these instructions:
-`install.packages(c("devtools","tidyverse", "ggpattern"))
+`install.packages(c("devtools","tidyverse", "ggpattern", "dde", "reshape2"))
 devtools::install_github("mrc-ide/odin", upgrade = FALSE)`
 
 If you see the following message, type `no`: 
