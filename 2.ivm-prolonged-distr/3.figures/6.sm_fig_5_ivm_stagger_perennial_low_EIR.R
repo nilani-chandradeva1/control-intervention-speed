@@ -1,9 +1,9 @@
-#plots for impact of staggered vs overnight ivermectin distributions in perennial settings
+#plots for impact of prolonged vs immediate ivermectin distributions in perennial settings
 #low endemicity
 
 require(tidyverse)
 
-df_distr_all <- readRDS("2.ivm-stagger-distr/output/df_distr_HR_3m_perennial.rds")
+df_distr_all <- readRDS("2.ivm-prolonged-distr/output/df_distr_HR_3m_perennial.rds")
 
 model_types <-  unique(df_distr_all$model_type)
 
@@ -29,7 +29,8 @@ df_distr <- df_distr_all %>%
   filter(init_EIR == 2) #filter for low endemicity
 start <- (365*5)+200
 ####
-#MATAMAL: 4 weeks after last MDA (prevalence)
+#measure efficacy at different time points, using protocols of different trials (MATAMAL and BOHEMIA) as examples
+#MATAMAL: prevalence survey 4 weeks after last MDA
 #BOHEMIA: incidence from first MDA, for 6 months
 matamal_survey <- (30*4) + start
 plot_matamal <- matamal_survey-start #diff between start and survey
@@ -330,5 +331,5 @@ plot_perennial <- cowplot::plot_grid(dynamics_perennial, impact_main_plot,
                                      labels = c("", "E"))
 
 #ggsave(plot_perennial, file = "2.ivm-stagger-distr/plots/sm_fig_5_plot_perennial_low_EIR.pdf")
-ggsave(plot_perennial, file = "2.ivm-stagger-distr/plots/sm_fig_5_plot_perennial_low_EIR.png")
+ggsave(plot_perennial, file = "2.ivm-prolonged-distr/plots/sm_fig_5_plot_perennial_low_EIR.png")
 
