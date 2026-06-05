@@ -11,6 +11,10 @@ Corresponding author*: Nilani Chandradeva (nilani.chandradeva@gmail.com)
 The scripts in this repository are for running the analysis presented in the titled manuscript. 
 
 The scripts for this analysis are found in the following folders : `1.simple-seirs-sei` and `2.ivm-prolonged-distr`. Odin models within the `inst` folder are called from scripts in these two folders.
+
+`1.simple-seirs-sei` contains code for running the simple SEIRS-SEI model
+`2.ivm-prolonged-distr` contains code for simulating the MDA of an ivermectin-like endectocide across single day or prolonged deployment scenarios, in perennial and seasonal settings.
+
 Within each folder, scripts are numbered in the order they should be run in. Output generated from each analysis are saved in the `output` folder and will be called from this folder if required later on. All figures, made using scripts in the `figures` folder, are saved in `plots`. 
 
 Please install the following packages using these instructions:
