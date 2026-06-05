@@ -1,10 +1,10 @@
-#viz and epi impact of staggered vs all in one distribution
+#viz and epi impact of prolonged vs all in one distribution
 require(tidyverse)
 
 start <- (365*5)+200
 start <- start + 60 #update start time: 60 days later
 
-df_distr_all <- readRDS("2.ivm-stagger-distr/output/df_distr_HR_3m_seasonal_late.rds")
+df_distr_all <- readRDS("2.ivm-prolonged-distr/output/df_distr_HR_3m_seasonal_late.rds")
 
 model_types <-  unique(df_distr_all$model_type)
 
@@ -49,7 +49,7 @@ df_distr <- df_distr %>%
 #full shaded area is area that I measure
 max_mv <- max(df_distr$mv, na.rm = TRUE)
 
-saveRDS(df_distr, file = "2.ivm-stagger-distr/output/df_distr_season_late.rds")
+saveRDS(df_distr, file = "2.ivm-prolonged-distr/output/df_distr_season_late.rds")
 
 
 mv_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = mv, col = as.factor(model_type))) +
@@ -79,36 +79,6 @@ mv_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = mv, col = as.factor(mod
            fill = "white", alpha = 0.1, col = "black")+
   annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = max_mv,
            alpha = 0.05)
-
-mv_plot_pres <- ggplot(df_distr, aes(x = (t - start)/365, y = mv, col = as.factor(model_type))) +
-  geom_line(size = 1.1) +
-  theme_bw(base_size = 18) +
-  #ylim(0, 50) +
-  ylab("Mosquito density")+
-  #theme(legend.position = c(0.7, 0.3)) +
-  guides(col = "none")+
-  #coord_cartesian(ylim = c(0,200))+
-  scale_color_manual(name = "Scenario", values = distr_pals, labels = c("10 days to complete MDA",
-                                                                        "20 days to complete MDA",
-                                                                        "1 day to complete MDA",
-                                                                        "Baseline (no intervention)")) +
-  coord_cartesian(xlim = c(-0.25,1), ylim = c(0, 200))+
-  xlab("Years since intervention started") +
-  geom_segment(x = 0, y = max_mv+15, xend = 0, yend = max_mv, arrow = arrow(length = unit(0.3, "cm")),
-               col = "black", size = 1.1)+ #first MDA
-  geom_segment(x = second_mda/365, y = max_mv+15, xend = second_mda/365, yend = max_mv, arrow = arrow(length = unit(0.3, "cm")),
-               col = "black", size = 1.1)+ #second MDA
-  geom_segment(x = third_mda/365, y = max_mv+15, xend = third_mda/365, yend = max_mv, arrow = arrow(length = unit(0.3, "cm")),
-               col = "black", size = 1.1)+ #third MDA
-  geom_segment(x = plot_matamal/365, y = max_mv+15, xend = plot_matamal/365, yend = max_mv,
-               arrow = arrow(length = unit(0.3, "cm")),
-               col = "blue", size = 1.1)+
-  annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = max_mv,
-           fill = "white", alpha = 0.1, col = "black")+
-  annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = max_mv,
-           alpha = 0.05)
-
-
 
 
 max_eir <- max(df_distr$EIRout, na.rm = TRUE)
@@ -166,35 +136,6 @@ prev_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = slide_prev0to80*100, 
   annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = max_prev,alpha = 0.05)
 
 #distr_pals <- c('#66c2a5','#fc8d62','#8da0cb','#a6d854')
-
-prev_plot_pres <- ggplot(df_distr, aes(x = (t - start)/365, y = slide_prev0to80*100, col = as.factor(model_type)))+
-  geom_line(size = 1.1)+
-  theme_bw(base_size = 18)+
-  #ylim(0, 75)+
-  scale_color_manual(name = "Scenario", values = c("baseline-Sen" = distr_pals[4],
-                                                   "all-in-one-stag-Sen" = distr_pals[3],
-                                                   "10d-stagger-Sen" = distr_pals[1],
-                                                   "20d-stagger-Sen" = distr_pals[2]),
-                     labels = c("baseline-Sen" = "Baseline", "all-in-one-stag-Sen" = "1 day to complete MDA",
-                                "10d-stagger-Sen" = "10 days to complete MDA", "20d-stagger-Sen" = "20 days to complete MDA"),
-                     breaks = c("baseline-Sen", "all-in-one-stag-Sen", "10d-stagger-Sen", "20d-stagger-Sen"))+
-  theme(legend.position = c(0.4, 0.2))+
-  coord_cartesian(xlim = c(-0.25,1))+
-  xlab("Years since intervention started")+
-  ylab("Slide prevalence (%) in children \n under 5-years-old") +
-  geom_segment(x = 0, y = max_prev+5, xend = 0, yend =max_prev, arrow = arrow(length = unit(0.3, "cm")),
-               col = "black", size = 1.1)+
-  geom_segment(x = second_mda/365, y = max_prev+5, xend = second_mda/365, yend =max_prev, arrow = arrow(length = unit(0.3, "cm")),
-               col = "black", size = 1.1)+
-  geom_segment(x = third_mda/365, y = max_prev+5, xend = third_mda/365, yend =max_prev, arrow = arrow(length = unit(0.3, "cm")),
-               col = "black", size = 1.1)+
-  geom_segment(x = plot_matamal/365, y = max_prev+5, xend = plot_matamal/365, yend = max_prev,
-               arrow = arrow(length = unit(0.3, "cm")),
-               col = "blue", size = 1.1)+
-  annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = max_prev,
-           fill = "white", alpha = 0.1, col = "black")+
-  annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = max_prev,alpha = 0.05)
-
 
 max_inc <- df_distr %>%
   filter(model_type == "baseline-Sen") %>%
@@ -393,7 +334,7 @@ impact_measurements_long2$intervention <- factor(impact_measurements_long2$inter
                                                  levels = c("impact_all_in_stag",
                                                             "impact_10d","impact_20d"))
 
-saveRDS(impact_measurements_long2, file = "2.ivm-stagger-distr/output/impact_seasonal_late.rds")
+saveRDS(impact_measurements_long2, file = "2.ivm-prolonged-distr/output/impact_seasonal_late.rds")
 
 cov_error2 <- cov_error
 cov_error2$intervention <- factor(cov_error2$intervention,
@@ -401,51 +342,11 @@ cov_error2$intervention <- factor(cov_error2$intervention,
                                              "impact_10d",
                                              "impact_20d"))
 
-saveRDS(cov_error2, file = "2.ivm-stagger-distr/output/impact_seasonal_late_covs_error.rds")
+saveRDS(cov_error2, file = "2.ivm-prolonged-distr/output/impact_seasonal_late_covs_error.rds")
 
 
 
 distr_pals <- c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')
-
-impact_main_plot_pres <- ggplot() +
-  # Bars
-  geom_bar(
-    data = impact_measurements_long2 %>% filter(init_EIR == 100 & ivm_cov_par == 0.7),
-    aes(x = factor(scenario), y = impact, fill = as.factor(intervention)),
-    stat = "identity",
-    position = position_dodge(width = 0.9)
-  ) +
-  # Error bars
-  geom_errorbar(
-    data = cov_error2,
-    aes(
-      x = factor(scenario),
-      ymin = cov_low_0.5,
-      ymax = cov_high_0.9,
-      fill = as.factor(intervention)   # match fill to align dodging
-    ),
-    width = 0.2,
-    position = position_dodge(width = 0.9),
-    size = 1.1
-  ) +
-  theme_bw(base_size = 18) +
-  theme(legend.position = c(0.7, 0.8)) +
-  scale_fill_manual(
-    values = c("impact_all_in_stag" = distr_pals[3],
-               "impact_10d" = distr_pals[1], "impact_20d" = distr_pals[2]),
-    labels = c("impact_all_in_stag" = "1 day to complete MDA",
-               "impact_10d" = "10 days to complete MDA",
-               "impact_20d" = "20 days to complete MDA"),
-    breaks = c("impact_all_in_stag", "impact_10d", "impact_20d"),
-    name = "Scenario") +
-  xlab("Time of measurement") +
-  ylab("Efficacy (%)") +
-  scale_x_discrete(labels = c(
-    "bohemia" = "Incidence U5s \n (start to 6m later)",
-    "matamal" = "Prevalence U5s \n (1m after last MDA)",
-    "Once year since start" = "Incidence U5s \n (start to 1y later)"
-  ))+
-  guides(fill = "none")
 
 impact_measurements_long %>%
   filter(init_EIR == 100 & ivm_cov_par == 0.7) %>%
@@ -457,32 +358,17 @@ dynamics_seasonal <- cowplot::plot_grid(mv_plot, eir_plot, prev_plot, inc_plot,
                                         labels = c("A", "B", "C", "D"),
                                         align = "v")
 
-#impact_perennial <- cowplot::plot_grid(impact_cov_plot, impact_Q0_plot, labels = c("E", "F"),
-#                                      nrow = 2, align = "v")
-
-
-
 
 plot_seasonal <- cowplot::plot_grid(dynamics_seasonal, impact_main_plot,
                                     labels = c("", "E"))
 
 
 
-ggsave(plot_seasonal, file = "2.ivm-stagger-distr/plots/fig_5_plot_seasonal_late.pdf")
-ggsave(plot_seasonal, file = "2.ivm-stagger-distr/plots/fig_5_plot_seasonal_late.png")
+ggsave(plot_seasonal, file = "2.ivm-prolonged-distr/plots/fig_5_plot_seasonal_late.pdf")
+ggsave(plot_seasonal, file = "2.ivm-prolonged-distr/plots/fig_5_plot_seasonal_late.png")
 
 
-
-
-dynamics_seasonal_pres <- cowplot::plot_grid(mv_plot_pres, prev_plot_pres,
-                                             labels = c("A", "B"), align = "h")
-plot_seasonal_pres <- cowplot::plot_grid(dynamics_seasonal_pres, impact_main_plot_pres,labels = c("", "C"))
-ggsave(plot_seasonal_pres, file = "../glasgow-visit/plot_seasonal_pres_late.png")
-
-
-
-
-#reporting stats
+#reporting stats in manuscript
 impact_measurements_long %>%
   filter(init_EIR == 100 & ivm_cov_par == 0.7 & scenario == "Once year since start")%>%
   group_by(scenario, intervention)
@@ -490,4 +376,3 @@ impact_measurements_long %>%
 
 cov_error %>%
   filter(init_EIR == 100 & scenario == "Once year since start" )
-
