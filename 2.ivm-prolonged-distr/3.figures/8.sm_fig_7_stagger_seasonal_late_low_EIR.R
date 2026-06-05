@@ -6,7 +6,7 @@ require(tidyverse)
 start <- (365*5)+200
 start <- start + 60 #update start time: 60 days later
 
-df_distr_all <- readRDS("2.ivm-stagger-distr/output/df_distr_HR_3m_seasonal_late.rds")
+df_distr_all <- readRDS("2.ivm-prolonged-distr/output/df_distr_HR_3m_seasonal_late.rds")
 
 model_types <-  unique(df_distr_all$model_type)
 
@@ -71,13 +71,7 @@ mv_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = mv, col = as.factor(mod
                col = "black", size = 1.1)+ #second MDA
   geom_segment(x = third_mda/365, y = max_mv+2.5, xend = third_mda/365, yend = max_mv, arrow = arrow(length = unit(0.3, "cm")),
                col = "black", size = 1.1)#+ #third MDA
-  #geom_segment(x = plot_matamal/365, y = max_mv+2.5, xend = plot_matamal/365, yend = max_mv,
-  #             arrow = arrow(length = unit(0.3, "cm")),
-  #             col = "blue", size = 1.1)+
-  #annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = max_mv,
-  #         fill = "white", alpha = 0.1, col = "black")+
-  #annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = max_mv,
-  #         alpha = 0.05)
+
 
 
 max_eir <- max(df_distr$EIRout, na.rm = TRUE)
@@ -99,14 +93,7 @@ eir_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = EIRout, col = as.facto
   geom_segment(x = second_mda/365, y = max_eir+0.01, xend = second_mda/365, yend =max_eir, arrow = arrow(length = unit(0.3, "cm")),
                col = "black", size = 1.1)+
   geom_segment(x = third_mda/365, y = max_eir+0.01, xend = third_mda/365, yend =max_eir, arrow = arrow(length = unit(0.3, "cm")),
-               col = "black", size = 1.1)#+
-  #geom_segment(x = plot_matamal/365, y = max_eir+0.01, xend = plot_matamal/365, yend = max_eir,
-  #             arrow = arrow(length = unit(0.3, "cm")),
-  #             col = "blue", size = 1.1)+
-  #annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = max_eir,
-  #         fill = "white", alpha = 0.1, col = "black")+
-  #annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = max_eir,
-  #         alpha = 0.05)
+               col = "black", size = 1.1)
 
 max_prev <- max(df_distr$slide_prev0to80*100, na.rm = TRUE)
 
@@ -131,10 +118,7 @@ prev_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = slide_prev0to80*100, 
                col = "black", size = 1.1)+
   geom_segment(x = plot_matamal/365, y = max_prev+5, xend = plot_matamal/365, yend = max_prev,
                arrow = arrow(length = unit(0.3, "cm")),
-               col = "blue", size = 1.1)#+
-  #annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = max_prev,
-  #         fill = "white", alpha = 0.1, col = "black")+
-  #annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = max_prev,alpha = 0.05)
+               col = "blue", size = 1.1)
 
 
 max_inc <- df_distr %>%
@@ -334,12 +318,7 @@ dynamics_seasonal <- cowplot::plot_grid(mv_plot, eir_plot, prev_plot, inc_plot,
                                         labels = c("A", "B", "C", "D"),
                                         align = "v")
 
-#impact_perennial <- cowplot::plot_grid(impact_cov_plot, impact_Q0_plot, labels = c("E", "F"),
-#                                      nrow = 2, align = "v")
-
-
 plot_seasonal <- cowplot::plot_grid(dynamics_seasonal, impact_main_plot,
                                     labels = c("", "E"))
 
-#ggsave(plot_seasonal, file = "2.ivm-stagger-distr/plots/sm_fig_7_plot_seasonal_late_low_EIR.pdf")
-ggsave(plot_seasonal, file = "2.ivm-stagger-distr/plots/sm_fig_7_plot_seasonal_late_low_EIR.png")
+ggsave(plot_seasonal, file = "2.ivm-prolonged-distr/plots/sm_fig_7_plot_seasonal_late_low_EIR.png")
