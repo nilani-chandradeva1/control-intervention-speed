@@ -1,5 +1,5 @@
-#model staggered and overnight distributions in seasonal setting
-#Fatick, Senegal: highly seasonal setting
+#model prolonged and immediate distributions in seasonal setting
+#Fatick, Senegal: example of a highly seasonal setting
 require(tidyverse)
 devtools::load_all()
 
@@ -33,16 +33,16 @@ for (i in seq_len(nrow(df_var_all))){
 }
 
 
-#we model the overnight distributions in both the original model (odin_model_endectocide) and model with staggered distributions (odin_model_endectocide_staggered_HS) to ensure that they are consistent
-#for manuscript, we then simulate overnight distributions in the staggered distribution model
-#this helps to ensure that any differences between the overnight and staggered distributions are due to the distribution alone
+#we model the immediate distributions in both the original model (odin_model_endectocide) and model with prolonged distributions (odin_model_endectocide_staggered_HS) to ensure that they are consistent
+#for manuscript, we then simulate immediate distributions in the staggered distribution model
+#this helps to ensure that any differences between the immediate and staggered distributions are due to the distribution alone and not the model structure
 
 #read in HR curves
-df_all <- readRDS("2.ivm-stagger-distr/output/HR_overnight.rds")
-df_extended_10d_new_HR <- readRDS("2.ivm-stagger-distr/output/HR_10d_stagger.rds")
-df_extended_20d_new_HR <- readRDS("2.ivm-stagger-distr/output/HR_20d_stagger.rds")
+df_all <- readRDS("2.ivm-prolonged-distr/output/HR_overnight.rds")
+df_extended_10d_new_HR <- readRDS("2.ivm-prolonged-distr/output/HR_10d_stagger.rds")
+df_extended_20d_new_HR <- readRDS("2.ivm-prolonged-distr/output/HR_20d_stagger.rds")
 
-#first, set up parameters for modelling overnight distributions in the original model (odin_model_endectocide)
+#first, set up parameters for modelling immediate distributions in the original model (odin_model_endectocide)
 #all-in-one
 ivm_parms_all <- ivRmectin::ivm_fun(#IVM_start_times = c(3120, 3150, 3180), #distribution every 3 months
   IVM_start_times = c(start, start + 30, start + 60),
@@ -94,6 +94,9 @@ my_sim_mod_all <- function(){
 } #adding mvtot_1 and 2 and 3 so can rbind onto the rest
 
 df_mod_all <- my_sim_mod_all()
+
+test_mod <- mod_all(my_list_all[[1]])
+str(test_mod)
 
 
 #checking against the all-in-one in the staggered model
@@ -187,7 +190,7 @@ df_mod_compare %>%
     tot_mv = sum(mv))
 
 #expect mv to match, but they do not: small discrepancy when ivermectin is turned off (from day 24 after start)
-#I think driven by how the solver handles jumps - prop_human_HR is suddenly changing to 0 again?
+#I think driven by how the solver handles jumps - prop_human_HR is suddenly changing to 0 again
 
 unique(df_mod_compare$ref)
 
@@ -196,11 +199,11 @@ df_mod_compare %>%
   ggplot(aes(x = t, y = mv, col = as.factor(model_type)))+
   geom_line()+
   xlim(2000, 2500)+
-  theme_minimal()
+  theme_minimal() #visually v good
 
 df_mod_compare %>%
   group_by(model_type) %>%
-  summarise(tot_mosq= sum(mv)) #marginal difference in total number of mosquitoes.
+  summarise(tot_mosq= sum(mv)) #marginal difference in total number of mosquitoes - good
 
 #then for the 10d and 20d distributions
 ivm_parms_10d_stag <- ivRmectin::ivm_fun_stag_cov(#IVM_start_times = c(3120, 3150, 3180), #distribution every 3 months
@@ -352,5 +355,5 @@ df_mod_baseline_stag <- my_sim_mod_baseline_stag()
 
 df_mod_distr <- do.call("rbind", list(df_mod_10d_stag, df_mod_20d_stag, df_mod_all_stag, df_mod_all, df_mod_baseline_stag))
 
-write_rds(df_mod_distr, file = "2.ivm-stagger-distr/output/df_distr_HR_3m_seasonal.rds")
+write_rds(df_mod_distr, file = "2.ivm-prolonged-distr/output/df_distr_HR_3m_seasonal.rds")
 

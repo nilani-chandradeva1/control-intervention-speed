@@ -1,8 +1,14 @@
-#model staggered and overnight distributions in perennial setting
+#model the MDA distributions taking place in a single day or over prolonged period of time
+#using the generated hazard ratios
 require(tidyverse)
-devtools::load_all()
 
-#we now pass this into the model
+devtools::load_all() #ignore the warning re. ivm_fun_stag
+
+#if devtools::load_all() does not work, run the following two lines:
+#unlink("src/odin.o")
+#unlink("src/registration.o")
+
+#we now pass
 
 time_period <- 365*15 #long run to get to eqm
 mda_int <- 30 #MDA starts every 30 days (for 3 months)
@@ -37,9 +43,9 @@ for (i in seq_len(nrow(df_var_all))){
 #this helps to ensure that any differences between the overnight and staggered distributions are due to the distribution alone
 
 #read in HR curves
-df_all <- readRDS("2.ivm-stagger-distr/output/HR_overnight.rds")
-df_extended_10d_new_HR <- readRDS("2.ivm-stagger-distr/output/HR_10d_stagger.rds")
-df_extended_20d_new_HR <- readRDS("2.ivm-stagger-distr/output/HR_20d_stagger.rds")
+df_all <- readRDS("2.ivm-prolonged-distr/output/HR_overnight.rds")
+df_extended_10d_new_HR <- readRDS("2.ivm-prolonged-distr/output/HR_10d_stagger.rds")
+df_extended_20d_new_HR <- readRDS("2.ivm-prolonged-distr/output/HR_20d_stagger.rds")
 
 #first, set up parameters for modelling overnight distributions in the original model (odin_model_endectocide)
 ivm_parms_all <- ivRmectin::ivm_fun(
@@ -49,8 +55,6 @@ ivm_parms_all <- ivRmectin::ivm_fun(
   ivm_coverage=0.8, #gets updated in function
   ivm_min_age=5,
   ivm_max_age = 90)
-
-ivm_parms_all$IVRM_start[start:2055]
 
 mod_all <-  function(data_in){
   Q0_in <- data_in[1]
@@ -89,7 +93,7 @@ my_sim_mod_all <- function(){
   return(mod_df)
 } #adding mvtot_1 and 2 and 3 so can rbind onto the rest
 
-df_mod_all <- my_sim_mod_all()
+df_mod_all <- my_sim_mod_all() #warnings are fine to ignore
 
 
 #checking against the all-in-one in the staggered model
@@ -154,7 +158,7 @@ ivm_parms_all_stag$haz[2025:2055]
 ivm_parms_all_stag$haz
 checking$mv[2025:2048]
 
-#compare treat all stag and normal code (i.e. not actually any staggering.)
+#compare treat all with prolonged model at same time and normal code (i.e. not actually any staggering.)
 df_mod_compare <- rbind(df_mod_all, df_mod_all_stag)
 
 df_mod_compare <- df_mod_compare %>%
@@ -180,12 +184,15 @@ df_mod_compare %>%
 
 unique(df_mod_compare$ref)
 
+
 df_mod_compare %>%
   filter(ivm_cov_par == 0.7 & ref == 5) %>%
   ggplot(aes(x = t, y = mv, col = as.factor(model_type)))+
   geom_line()+
   xlim(2000, 2500)+
   theme_minimal()
+
+#visual inspection - quite consistent
 
 #then for the 10d and 20d distributions
 ivm_parms_10d_stag <- ivRmectin::ivm_fun_stag_cov(
@@ -293,7 +300,7 @@ my_sim_mod_20d_stag <- function(){
 
 df_mod_20d_stag <- my_sim_mod_20d_stag()
 
-#baseline: no interventions
+#baseline scenario: no interventions
 mod_baseline_stag <-  function(data_in){
   Q0_in <- data_in[1]
   ivm_cov_in <- data_in[2]
@@ -336,5 +343,5 @@ df_mod_baseline_stag <- my_sim_mod_baseline_stag()
 
 df_mod_distr <- do.call("rbind", list(df_mod_10d_stag, df_mod_20d_stag, df_mod_all_stag, df_mod_all, df_mod_baseline_stag))
 
-write_rds(df_mod_distr, file = "2.ivm-stagger-distr/output/df_distr_HR_3m_perennial.rds")
+write_rds(df_mod_distr, file = "2.ivm-prolonged-distr/output/df_distr_HR_3m_perennial.rds")
 

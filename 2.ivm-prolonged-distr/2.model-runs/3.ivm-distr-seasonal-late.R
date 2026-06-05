@@ -1,4 +1,4 @@
-#model staggered and overnight distributions in seasonal setting with MDA starting later
+#model prolonged and immediated distributions in seasonal setting with MDA starting later in season
 #Fatick, Senegal: highly seasonal setting
 require(tidyverse)
 devtools::load_all()

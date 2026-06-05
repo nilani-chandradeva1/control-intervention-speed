@@ -20,7 +20,6 @@ Suggests:
     readxl,
     knitr,
     rmarkdown
-RoxygenNote: 7.3.0
 Imports: 
     odin (>= 1.0.5), 
     dde (>= 1.0.2),
@@ -41,3 +40,4 @@ Remotes:
     mrc-ide/dde,
     mrc-ide/odin,
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0
