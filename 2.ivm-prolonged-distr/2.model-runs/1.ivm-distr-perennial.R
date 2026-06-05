@@ -38,9 +38,9 @@ for (i in seq_len(nrow(df_var_all))){
 }
 
 
-#we model the overnight distributions in both the original model (odin_model_endectocide) and model with staggered distributions (odin_model_endectocide_staggered_HS) to ensure that they are consistent
-#for manuscript, we then simulate overnight distributions in the staggered distribution model
-#this helps to ensure that any differences between the overnight and staggered distributions are due to the distribution alone
+#we model the immediate distributions in both the original model (odin_model_endectocide) and model with prolonged distributions (odin_model_endectocide_staggered_HS) to ensure that they are consistent
+#for manuscript, we then simulate immediate distributions in the prolonged distribution model
+#this helps to ensure that any differences between the immediate and prolonged distributions are due to the distribution alone
 
 #read in HR curves
 df_all <- readRDS("2.ivm-prolonged-distr/output/HR_overnight.rds")
@@ -180,7 +180,7 @@ df_mod_compare %>%
     tot_mv = sum(mv)) #total difference of 6 mosquitoes.
 
 #small discrepancy when ivermectin is turned off (from day 24 after start)
-#driven by how the solver handles jumps - prop_human_HR is suddenly changing to 0 again?
+#driven by how the solver handles jumps - prop_human_HR is suddenly changing to 0 again
 
 unique(df_mod_compare$ref)
 
