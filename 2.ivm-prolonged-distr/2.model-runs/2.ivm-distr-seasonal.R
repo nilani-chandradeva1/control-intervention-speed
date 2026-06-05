@@ -34,8 +34,8 @@ for (i in seq_len(nrow(df_var_all))){
 
 
 #we model the immediate distributions in both the original model (odin_model_endectocide) and model with prolonged distributions (odin_model_endectocide_staggered_HS) to ensure that they are consistent
-#for manuscript, we then simulate immediate distributions in the staggered distribution model
-#this helps to ensure that any differences between the immediate and staggered distributions are due to the distribution alone and not the model structure
+#for manuscript, we then simulate immediate distributions in the prolonged distribution model
+#this helps to ensure that any differences between the immediate and prolonged distributions are due to the distribution alone and not the model structure
 
 #read in HR curves
 df_all <- readRDS("2.ivm-prolonged-distr/output/HR_overnight.rds")
