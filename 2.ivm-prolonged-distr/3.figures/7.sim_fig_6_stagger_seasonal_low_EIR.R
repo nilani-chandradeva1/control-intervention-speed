@@ -4,7 +4,7 @@ require(tidyverse)
 
 start <- (365*5)+200
 
-df_distr_all <- readRDS("2.ivm-stagger-distr/output/df_distr_HR_3m_seasonal.rds")
+df_distr_all <- readRDS("2.ivm-prolonged-distr/output/df_distr_HR_3m_seasonal.rds")
 
 model_types <-  unique(df_distr_all$model_type)
 
@@ -28,6 +28,8 @@ covs <- unique(df_distr_all$ivm_cov_par)
 
 df_distr <- df_distr_all %>%
   filter(init_EIR == 2) #filter for low endemicity
+
+#measure efficacy at different time points, using examples from MATAMAL/BOHEMIA trial protocols
 
 #MATAMAL: 4 weeks after last MDA (prevalence)
 #BOHEMIA: incidence from first MDA, for 6 months
@@ -93,14 +95,7 @@ eir_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = EIRout, col = as.facto
   geom_segment(x = second_mda/365, y = max_eir+0.005, xend = second_mda/365, yend =max_eir, arrow = arrow(length = unit(0.3, "cm")),
                col = "black", size = 1.1)+
   geom_segment(x = third_mda/365, y = max_eir+0.005, xend = third_mda/365, yend =max_eir, arrow = arrow(length = unit(0.3, "cm")),
-               col = "black", size = 1.1) #+
-  #geom_segment(x = plot_matamal/365, y = max_eir+0.005, xend = plot_matamal/365, yend = max_eir,
-  #             arrow = arrow(length = unit(0.3, "cm")),
-  #             col = "blue", size = 1.1)+
-  #annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = max_eir,
-  #         fill = "white", alpha = 0.1, col = "black")+
-  #annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = max_eir,
-  #         alpha = 0.05)
+               col = "black", size = 1.1)
 
 max_prev <- max(df_distr$slide_prev0to80*100, na.rm = TRUE)
 
@@ -124,11 +119,7 @@ prev_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = slide_prev0to80*100, 
                col = "black", size = 1.1)+
   geom_segment(x = plot_matamal/365, y = max_prev+5, xend = plot_matamal/365, yend = max_prev,
                arrow = arrow(length = unit(0.3, "cm")),
-               col = "blue", size = 1.1) #+
-  #annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = max_prev,
-  #         fill = "white", alpha = 0.1, col = "black")+
-  #annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = max_prev,alpha = 0.05)
-
+               col = "blue", size = 1.1)
 
 max_inc <- df_distr %>%
   filter(model_type == "baseline-Sen") %>%
@@ -191,13 +182,13 @@ df_distr_wide_setting <- left_join(df_distr_wide_setting_ivm,df_distr_wide_setti
 
 #prevalence
 df_distr_wide_setting_prev_ivm<- df_distr_all %>%
-  select(t, ref, init_EIR, model_type, ivm_cov_par, slide_prev0to80) %>%
+  dplyr::select(t, ref, init_EIR, model_type, ivm_cov_par, slide_prev0to80) %>%
   group_by(ref) %>%
   group_modify(~ {
     df_wide <- .x %>%
       pivot_wider(names_from = model_type, values_from = slide_prev0to80)
   }) %>%
-  select(-`baseline-Sen`)
+  dplyr::select(-`baseline-Sen`)
 
 df_distr_wide_setting_prev_baseline <- df_distr_all %>%
   filter(model_type == "baseline-Sen") %>%
@@ -267,7 +258,7 @@ impact_measurements_long$intervention <- factor(impact_measurements_long$interve
 levels_x <- unique(impact_measurements_long$scenario)
 
 distr_pals <- c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')
-#distr_pals2 <- distr_pals[1:4]
+
 
 cov_error <- impact_measurements_long %>%
   ungroup() %>%
@@ -326,8 +317,7 @@ dynamics_seasonal <- cowplot::plot_grid(mv_plot, eir_plot, prev_plot, inc_plot,
                                         labels = c("A", "B", "C", "D"),
                                         align = "v")
 
-#impact_perennial <- cowplot::plot_grid(impact_cov_plot, impact_Q0_plot, labels = c("E", "F"),
-#                                      nrow = 2, align = "v")
+
 
 output_stats <- impact_measurements_long %>%
   filter(init_EIR == 2 & ivm_cov_par == 0.7) %>%
@@ -348,5 +338,4 @@ plot_seasonal <- cowplot::plot_grid(dynamics_seasonal, impact_main_plot,
                                     labels = c("", "E"))
 
 
-#ggsave(plot_seasonal, file = "2.ivm-stagger-distr/plots/sm_fig_6_plot_seasonal_low_EIR.pdf")
-ggsave(plot_seasonal, file = "2.ivm-stagger-distr/plots/sm_fig_6_plot_seasonal_low_EIR.png")
+ggsave(plot_seasonal, file = "2.ivm-prolonged-distr/plots/sm_fig_6_plot_seasonal_low_EIR.png")
