@@ -5,20 +5,19 @@ facet_labels <- c("10d" = "10-day MDA implementation",
                   "20d" = "20-day MDA implementation",
                   "all_in_one_stag" = "Synchronised MDA implementation")
 
-stag_HR <- readRDS("2.ivm-stagger-distr/output/HR_staggered.rds")
-stag_cov <- readRDS("2.ivm-stagger-distr/output/prop_lethal_ivm.rds")
+stag_HR <- readRDS("2.ivm-prolonged-distr/output/HR_staggered.rds")
+stag_cov <- readRDS("2.ivm-prolonged-distr/output/prop_lethal_ivm.rds")
 
 stag_HR$stagger <- factor(stag_HR$stagger, levels = c("all_in_one_stag", "10d", "20d"))
 stag_cov$stagger <- factor(stag_cov$stagger, levels = c("all_in_one_stag", "10d", "20d"))
 
 HR_plot <- ggplot(stag_HR, aes(x = Day, y = HR, group = group))+
-  geom_line(aes(col = as.factor(group), lty = as.factor(group_lab)),size = 1.1,
+  geom_line(aes(col = as.factor(group), lty = as.factor(group_lab)),linewidth  = 1.1,
             inherit.aes = TRUE, alpha = 0.6)+
   geom_point(size = 1.5, alpha = 0.8, aes(col = as.factor(group)))+
   facet_wrap(vars(stagger), labeller = as_labeller(facet_labels))+
   theme_bw(base_size = 14)+
   geom_hline(aes(yintercept = 1), lty = "dashed")+
-  ylim(1, 16)+
   scale_colour_manual(values = c(
     "group1" = "#1b9e77",
     "group2" = "#d95f02",
@@ -49,7 +48,7 @@ time_toxic_plot <- ggplot(stag_cov, aes(x = Day, y = prop_pop_cov))+
 
 
 #read in one of the model runs to get correct coverage
-df_distr_all <- readRDS("2.ivm-stagger-distr/output/df_distr_HR_3m_perennial.rds")
+df_distr_all <- readRDS("2.ivm-prolonged-distr/output/df_distr_HR_3m_perennial.rds")
 df_distr_all %>%
   filter(t == 1) %>% #EIR at t = 1 0.00407 or 0.203
   group_by(ref) %>%
@@ -109,4 +108,4 @@ toxic_ivm_plot <- cowplot::plot_grid(HR_plot, time_toxic_plot, time_var_cov_plot
                                      labels = c("A", "B", "C"))
 
 
-ggsave(toxic_ivm_plot, file = "2.ivm-stagger-distr/plots/SM_fig_toxic_ivm_plots.pdf")
+ggsave(toxic_ivm_plot, file = "2.ivm-prolonged-distr/plots/SM_fig_toxic_ivm_plots.pdf")
