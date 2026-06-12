@@ -2,7 +2,7 @@
 % Please edit documentation in R/mda_ivm_functions.R
 \name{mda_fun}
 \alias{mda_fun}
-\title{Function that returns parameters required for MDA}
+\title{Create mass drug administration (MDA) intervention settings}
 \usage{
 mda_fun(
   ncc = 2,
@@ -15,6 +15,50 @@ mda_fun(
   MDA_drug_choice = 2
 )
 }
+\arguments{
+\item{ncc}{Integer indicating the number of consecutive treatment
+cycles or campaign components. Default is `2`.}
+
+\item{MDA_times}{Numeric vector giving the times at which MDA rounds
+are administered. A maximum of nine rounds is supported.}
+
+\item{MDA_grp_prop}{Proportion of the population belonging to the
+target treatment group. Default is `0.9`.}
+
+\item{MDA_cov}{Proportion of the eligible target group receiving
+treatment (coverage). Default is `0.8`.}
+
+\item{MDA_st_age}{Minimum eligible age (in years) for treatment.
+This value is mapped to the nearest predefined age category.
+Default is `0.5`.}
+
+\item{MDA_en_age}{Maximum eligible age (in years) for treatment.
+This value is mapped to the nearest predefined age category.
+Default is `80`.}
+
+\item{MDA_succ}{Probability that treatment is successful among
+treated individuals. Default is `0.95`.}
+
+\item{MDA_drug_choice}{Integer identifying the drug regimen to use.
+The interpretation of this code depends on the model implementation.}
+}
+\value{
+A named list containing:
+\describe{
+  \item{MDA_t1--MDA_t9}{Times of up to nine MDA rounds. Unused rounds
+  are filled with a large placeholder value (`1e5`).}
+  \item{MDA_st_cat}{Index of the lower eligible age category.}
+  \item{MDA_en_cat}{Index of the upper eligible age category.}
+  \item{ncc}{Number of treatment cycles/components.}
+  \item{MDA_grp_prop}{Target group proportion.}
+  \item{MDA_cov}{Treatment coverage.}
+  \item{MDA_succ}{Treatment success probability.}
+  \item{mda_drug_choice}{Drug regimen identifier.}
+}
+}
 \description{
-Function that returns parameters required for MDA
+Constructs a list of parameters defining a mass drug administration
+(MDA) intervention for use in the transmission model. User-specified
+age limits are mapped to the nearest predefined age categories, and
+up to nine treatment rounds are supported.
 }

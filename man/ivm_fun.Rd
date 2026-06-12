@@ -2,7 +2,7 @@
 % Please edit documentation in R/mda_ivm_functions.R
 \name{ivm_fun}
 \alias{ivm_fun}
-\title{Function that returns parameters required for Ivermectin simulation}
+\title{Ivermectin intervention function}
 \usage{
 ivm_fun(
   IVM_start_times,
@@ -14,6 +14,24 @@ ivm_fun(
   bites_per_3_days = 1
 )
 }
+\arguments{
+\item{IVM_start_times}{Numeric vector of ivermectin start times.}
+
+\item{time_period}{Numeric time period.}
+
+\item{hazard_profile}{Hazard profile used in the simulation.}
+
+\item{ivm_coverage}{Ivermectin coverage.}
+
+\item{ivm_min_age}{Minimum eligible age.}
+
+\item{ivm_max_age}{Maximum eligible age.}
+
+\item{bites_per_3_days}{Number of bites per three days.}
+}
+\value{
+Description of return value.
+}
 \description{
-Function that returns parameters required for Ivermectin simulation
+Ivermectin intervention function
 }

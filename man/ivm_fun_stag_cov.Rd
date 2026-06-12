@@ -2,7 +2,7 @@
 % Please edit documentation in R/mda_ivm_functions.R
 \name{ivm_fun_stag_cov}
 \alias{ivm_fun_stag_cov}
-\title{Function that returns parameters required for Ivermectin simulation with staggered distribution and coverage}
+\title{Create ivermectin intervention settings with staggered high-risk coverage}
 \usage{
 ivm_fun_stag_cov(
   IVM_start_times,
@@ -15,6 +15,53 @@ ivm_fun_stag_cov(
   bites_per_3_days = 1
 )
 }
+\arguments{
+\item{IVM_start_times}{Numeric vector giving the start times of ivermectin
+intervention rounds.}
+
+\item{time_period}{Numeric value giving the total simulation time period.
+The returned time vector runs from `0` to `time_period`.}
+
+\item{hazard_profile}{Numeric vector giving the ivermectin hazard profile
+over the duration of the intervention effect.}
+
+\item{prop_human_HR_threshold}{Numeric vector giving the time-varying
+proportion of humans above the high-risk threshold during each
+intervention period. Its length should be at least as long as the
+intervention effect duration.}
+
+\item{ivm_coverage}{Numeric value giving ivermectin treatment coverage
+among the eligible population. Default is `0.8`.}
+
+\item{ivm_min_age}{Numeric value giving the minimum eligible age for
+ivermectin treatment. Default is `5`.}
+
+\item{ivm_max_age}{Numeric value giving the maximum eligible age for
+ivermectin treatment. Default is `200`.}
+
+\item{bites_per_3_days}{Numeric value giving the number of bites per
+three-day period. Default is `1`.}
+}
+\value{
+A named list containing:
+\describe{
+  \item{ttt}{Integer time vector from `0` to `time_period`.}
+  \item{eff_len}{Length of the ivermectin effect period, calculated as
+  `length(hazard_profile)`.}
+  \item{haz}{The supplied ivermectin hazard profile.}
+  \item{ivm_cov_par}{Ivermectin treatment coverage parameter.}
+  \item{ivm_min_age}{Minimum eligible treatment age.}
+  \item{ivm_max_age}{Maximum eligible treatment age.}
+  \item{B2}{Number of bites per three-day period.}
+  \item{IVRM_start}{Time profile indicating the active ivermectin round
+  start time for each time point.}
+  \item{prop_human_HR_threshold}{Time profile for the proportion of humans
+  above the high-risk threshold.}
+}
+}
 \description{
-Function that returns parameters required for Ivermectin simulation with staggered distribution and coverage
+Constructs a time profile for an ivermectin intervention, including the
+intervention start times, hazard profile, age eligibility limits, biting
+rate parameter, and a staggered time-varying profile for the proportion
+of humans above the high-risk threshold.
 }
