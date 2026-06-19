@@ -12,8 +12,7 @@
 #'   Default=365
 #' @param admin2 Character of admin unit. Default = "Tororo"
 #'
-#' @importFrom ggplot2 aes scale_colour_manual scale_x_continuous
-#'   xlab ylab geom_line ggplot
+#' @importFrom ggplot2 aes scale_colour_manual scale_x_continuous xlab ylab geom_line ggplot
 #' @importFrom reshape2 melt
 #' @importFrom odin odin
 #'
