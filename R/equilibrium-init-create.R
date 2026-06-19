@@ -321,9 +321,9 @@ equilibrium_init_create <- function(age_vector, het_brackets,
   }
 
   # better het bounds for equilbirum initialisation in individual model
-  zetas <- rlnorm(n = 1e5,meanlog = -mpl$sigma2/2, sdlog = sqrt(mpl$sigma2))
+  zetas <- stats::rlnorm(n = 1e5,meanlog = -mpl$sigma2/2, sdlog = sqrt(mpl$sigma2))
   while(sum(zetas>100)>0){
-    zetas[zetas>100] <- rlnorm(n = sum(zetas>100),meanlog = -mpl$sigma2/2, sdlog = sqrt(mpl$sigma2))
+    zetas[zetas>100] <- stats::rlnorm(n = sum(zetas>100),meanlog = -mpl$sigma2/2, sdlog = sqrt(mpl$sigma2))
   }
 
   wt_cuts <- round(cumsum(het_wt)*1e5)
