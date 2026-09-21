@@ -15,7 +15,7 @@ third_mda <- 60+start-start
 max_mv <- max(df_distr_seasonal$mv, na.rm = TRUE)
 mv_plot_on_time <- ggplot(df_distr_seasonal, aes(x = (t - start)/365, y = mv, col = as.factor(model_type))) +
   geom_line(size = 1.1) +
-  theme_bw(base_size = 20) +
+  theme_bw(base_size = 14) +
   #ylim(0, 50) +
   ylab("Mosquito density")+
   #theme(legend.position = c(0.7, 0.3)) +
@@ -45,7 +45,7 @@ max_prev <- max(df_distr_seasonal$slide_prev0to80*100, na.rm = TRUE)
 
 prev_plot_on_time <- ggplot(df_distr_seasonal, aes(x = (t - start)/365, y = slide_prev0to80*100, col = as.factor(model_type)))+
   geom_line(size = 1.1)+
-  theme_bw(base_size = 20)+
+  theme_bw(base_size = 14)+
   #ylim(0, 75)+
   scale_color_manual(values = distr_pals,
                      breaks = c("baseline-Sen", "all-in-one-stag-Sen", "10d-stagger-Sen", "20d-stagger-Sen"),
@@ -83,7 +83,7 @@ max_mv <- max(df_distr_seasonal_late$mv, na.rm = TRUE)
 
 mv_plot_late <- ggplot(df_distr_seasonal_late, aes(x = (t - start)/365, y = mv, col = as.factor(model_type)))+
   geom_line(size = 1.1)+
-  theme_bw(base_size = 20)+
+  theme_bw(base_size = 14)+
   scale_color_manual(values = distr_pals,
                      breaks = c("baseline-Sen", "all-in-one-stag-Sen", "10d-stagger-Sen", "20d-stagger-Sen"),
                      labels = c("No intervention", "Synchronised MDA", "10-day MDA", "20-day MDA"),
@@ -110,7 +110,7 @@ max_prev <- max(df_distr_seasonal_late$slide_prev0to80*100, na.rm = TRUE)
 
 prev_plot_late <- ggplot(df_distr_seasonal_late, aes(x = (t - start)/365, y = slide_prev0to80*100, col = as.factor(model_type)))+
   geom_line(size = 1.1)+
-  theme_bw(base_size = 20)+
+  theme_bw(base_size = 14)+
   scale_color_manual(values = distr_pals,
                      breaks = c("baseline-Sen", "all-in-one-stag-Sen", "10d-stagger-Sen", "20d-stagger-Sen"),
                      labels = c("No intervention", "Synchronised MDA", "10-day MDA", "20-day MDA"),
@@ -255,7 +255,7 @@ impact_plot <- ggplot()  +
       )
     )
   )+
-  theme_bw(base_size = 20)+
+  theme_bw(base_size = 14)+
   theme(legend.position = c(c(0.5, 0.9)))+
   ylab("Efficacy (%)") +
   xlab("Time of measurement") +
