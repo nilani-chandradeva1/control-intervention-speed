@@ -227,5 +227,5 @@ figure_dynamics_sens_impact <- cowplot::plot_grid(sens_mosq_killed_plot, sens_mo
                                            labels = c("A", "B", "C", "D", "E", "F"))
 
 
-
-ggsave(figure_dynamics_sens_impact, file = "1.simple-seirs-sei/plots/sm_fig_2_simple_model_plot_sens_high_endemicity.pdf")
+#S2 fig
+ggsave(figure_dynamics_sens_impact, file = "1.simple-seirs-sei/plots/SM_simple_model_plot_sens_high_endemicity.pdf")

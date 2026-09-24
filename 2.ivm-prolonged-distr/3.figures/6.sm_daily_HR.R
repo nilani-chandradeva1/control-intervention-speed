@@ -16,4 +16,5 @@ HR_Smit_plot <- ggplot(ivm_haz, aes(x = Day, y = IVM_300_3_HS))+
   xlim(0, 25)+
   xlab(expression("Day (" * italic(j) * ")"))
 
-ggsave(HR_Smit_plot, file = "2.ivm-prolonged-distr/plots/sm_fig_4_HR_Smit.pdf")
+#S4 fig
+ggsave(HR_Smit_plot, file = "2.ivm-prolonged-distr/plots/SM_HR_Smit.pdf")

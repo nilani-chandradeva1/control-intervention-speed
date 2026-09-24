@@ -129,5 +129,6 @@ sens_dynamics_epi <- cowplot::plot_grid(inf_mosq, susceptible_people, Re_t_plot_
                                         nrow = 2,
                                         align = "v")
 
-ggsave(sens_dynamics_epi, file = "1.simple-seirs-sei/plots/sm_fig_1_simple_model_plot_epi.pdf")
+#S1 fig
+ggsave(sens_dynamics_epi, file = "1.simple-seirs-sei/plots/SM_simple_model_plot_epi.pdf")
 

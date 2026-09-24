@@ -364,8 +364,8 @@ plot_seasonal <- cowplot::plot_grid(dynamics_seasonal, impact_main_plot,
 
 
 
-ggsave(plot_seasonal, file = "2.ivm-prolonged-distr/plots/fig_5_plot_seasonal_late.pdf")
-ggsave(plot_seasonal, file = "2.ivm-prolonged-distr/plots/fig_5_plot_seasonal_late.png")
+#ggsave(plot_seasonal, file = "2.ivm-prolonged-distr/plots/fig_5_plot_seasonal_late.pdf")
+#ggsave(plot_seasonal, file = "2.ivm-prolonged-distr/plots/fig_5_plot_seasonal_late.png")
 
 
 #reporting stats in manuscript

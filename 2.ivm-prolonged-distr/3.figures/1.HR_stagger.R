@@ -107,5 +107,5 @@ toxic_ivm_plot <- cowplot::plot_grid(HR_plot, time_toxic_plot, time_var_cov_plot
                                      nrow = 3, align = "v",
                                      labels = c("A", "B", "C"))
 
-
+#S5 fig
 ggsave(toxic_ivm_plot, file = "2.ivm-prolonged-distr/plots/SM_fig_toxic_ivm_plots.pdf")

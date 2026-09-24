@@ -270,6 +270,6 @@ seasonal_figure <- cowplot::plot_grid(dynamics, impact_plot, labels = c("", "E")
 
 
 
-
+#Fig 4
 ggsave(seasonal_figure, file = "2.ivm-prolonged-distr/plots/seasonality_main_figure.png")
 #ggsave(seasonal_figure, file = "2.ivm-stagger-distr/plots/seasonality_main_figure.pdf")

@@ -1,5 +1,5 @@
-#plots for impact of staggered vs overnight ivermectin distributions in seasonal settings
-#low endemicity
+#plots for impact of prolonged vs 1-day ivermectin distributions in seasonal settings
+#high endemicity
 require(tidyverse)
 
 start <- (365*5)+200
@@ -24,15 +24,17 @@ unique(df_distr_all$init_EIR)
 unique(df_distr_all$model_type)
 
 distr_pals <- c('#a6d854', '#8da0cb', '#66c2a5', '#fc8d62')
+#distr_pals_order <- c(distr_pals[4], distr_pals[3], distr_pals[1], distr_pals[2])
 covs <- unique(df_distr_all$ivm_cov_par)
 
 df_distr <- df_distr_all %>%
-  filter(init_EIR == 2) #filter for low endemicity
+  filter(init_EIR == 100) #filter for high endemicity
 
-#measure efficacy at different time points, using examples from MATAMAL/BOHEMIA trial protocols
+##
+#measure efficacy at different time points, using MATAMAL/BOHEMIA trial protocols as examples
+#MATAMA trial: prevalence survey takes place 4 weeks after last MDA
+#BOHEMIA: incidence measured from first MDA, for 6 months
 
-#MATAMAL: 4 weeks after last MDA (prevalence)
-#BOHEMIA: incidence from first MDA, for 6 months
 matamal_survey <- (30*4) + start
 plot_matamal <- matamal_survey-start #diff between start and survey
 bohemia_inc_period <- start+(6*30)
@@ -57,25 +59,29 @@ mv_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = mv, col = as.factor(mod
   ylab("Mosquito density")+
   #theme(legend.position = c(0.7, 0.3)) +
   guides(col = "none")+
+  #coord_cartesian(ylim = c(0,200))+
   scale_color_manual(values = distr_pals,
                      breaks = c("baseline-Sen", "all-in-one-stag-Sen", "10d-stagger-Sen", "20d-stagger-Sen"),
-                     labels = c("No intervention", "Synchronised MDA", "10-day MDA", "20-day MDA"),
-                     name = "Scenario") +
-  coord_cartesian(xlim = c(-0.25,1), ylim = c(0, 10))+
+                     labels = c("Baseline", "Synchronised MDA", "10-day MDA", "20-day MDA"),
+                     name = "Time to complete MDA") +
+  coord_cartesian(xlim = c(-0.25,1), ylim = c(0, 200))+
   xlab("Years since intervention started") +
-  geom_segment(x = 0, y = max_mv+0.5, xend = 0, yend = max_mv, arrow = arrow(length = unit(0.3, "cm")),
+  geom_segment(x = 0, y = max_mv+25, xend = 0, yend = max_mv, arrow = arrow(length = unit(0.3, "cm")),
                col = "black", size = 1.1)+ #first MDA
-  geom_segment(x = second_mda/365, y = max_mv+0.5, xend = second_mda/365, yend = max_mv, arrow = arrow(length = unit(0.3, "cm")),
+  geom_segment(x = second_mda/365, y = max_mv+25, xend = second_mda/365, yend = max_mv, arrow = arrow(length = unit(0.3, "cm")),
                col = "black", size = 1.1)+ #second MDA
-  geom_segment(x = third_mda/365, y = max_mv+0.5, xend = third_mda/365, yend = max_mv, arrow = arrow(length = unit(0.3, "cm")),
-               col = "black", size = 1.1) #+ #third MDA
-  #geom_segment(x = plot_matamal/365, y = max_mv+0.5, xend = plot_matamal/365, yend = max_mv,
-  #             arrow = arrow(length = unit(0.3, "cm")),
-  #             col = "blue", size = 1.1)+
-  #annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = max_mv,
-  #         fill = "white", alpha = 0.1, col = "black")+
-  #annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = max_mv,
-  #         alpha = 0.05)
+  geom_segment(x = third_mda/365, y = max_mv+25, xend = third_mda/365, yend = max_mv, arrow = arrow(length = unit(0.3, "cm")),
+               col = "black", size = 1.1)+ #third MDA
+  geom_segment(x = plot_matamal/365, y = max_mv+25, xend = plot_matamal/365, yend = max_mv,
+               arrow = arrow(length = unit(0.3, "cm")),
+               col = "blue", size = 1.1)+
+  annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = max_mv,
+           fill = "white", alpha = 0.1, col = "black")+
+  annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = max_mv,
+           alpha = 0.05)
+
+saveRDS(df_distr, file = "2.ivm-prolonged-distr/output/df_distr_season_timed.rds")
+
 
 max_eir <- max(df_distr$EIRout, na.rm = TRUE)
 
@@ -84,18 +90,25 @@ eir_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = EIRout, col = as.facto
   theme_bw(base_size = 14)+
   scale_color_manual(values = distr_pals,
                      breaks = c("baseline-Sen", "all-in-one-stag-Sen", "10d-stagger-Sen", "20d-stagger-Sen"),
-                     labels = c("No intervention", "Synchronised MDA", "10-day MDA", "20-day MDA"),
-                     name = "Scenario") +
+                     labels = c("Baseline", "Synchronised MDA", "10-day MDA", "20-day MDA"),
+                     name = "Time to complete MDA") +
   guides(col = "none")+
-  coord_cartesian(xlim = c(-0.25,1), ylim = c(0, 0.03))+
+  coord_cartesian(xlim = c(-0.25,1), ylim = c(0, 1))+
   ylab("Average number of infectious bites \n per person per day (daily EIR)")+
   xlab("Years since intervention started") +
-  geom_segment(x = 0, y = max_eir+0.005, xend = 0, yend =max_eir, arrow = arrow(length = unit(0.3, "cm")),
+  geom_segment(x = 0, y = max_eir+0.15, xend = 0, yend =max_eir, arrow = arrow(length = unit(0.3, "cm")),
                col = "black", size = 1.1)+
-  geom_segment(x = second_mda/365, y = max_eir+0.005, xend = second_mda/365, yend =max_eir, arrow = arrow(length = unit(0.3, "cm")),
+  geom_segment(x = second_mda/365, y = max_eir+0.15, xend = second_mda/365, yend =max_eir, arrow = arrow(length = unit(0.3, "cm")),
                col = "black", size = 1.1)+
-  geom_segment(x = third_mda/365, y = max_eir+0.005, xend = third_mda/365, yend =max_eir, arrow = arrow(length = unit(0.3, "cm")),
-               col = "black", size = 1.1)
+  geom_segment(x = third_mda/365, y = max_eir+0.15, xend = third_mda/365, yend =max_eir, arrow = arrow(length = unit(0.3, "cm")),
+               col = "black", size = 1.1)+
+  geom_segment(x = plot_matamal/365, y = max_eir+0.15, xend = plot_matamal/365, yend = max_eir,
+               arrow = arrow(length = unit(0.3, "cm")),
+               col = "blue", size = 1.1)+
+  annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = max_eir,
+           fill = "white", alpha = 0.1, col = "black")+
+  annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = max_eir,
+           alpha = 0.05)
 
 max_prev <- max(df_distr$slide_prev0to80*100, na.rm = TRUE)
 
@@ -105,21 +118,24 @@ prev_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = slide_prev0to80*100, 
   #ylim(0, 75)+
   scale_color_manual(values = distr_pals,
                      breaks = c("baseline-Sen", "all-in-one-stag-Sen", "10d-stagger-Sen", "20d-stagger-Sen"),
-                     labels = c("No intervention", "Synchronised MDA", "10-day MDA", "20-day MDA"),
-                     name = "Scenario") +
-  theme(legend.position = c(0.6, 0.85))+
-  coord_cartesian(xlim = c(-0.25,1), ylim = c(0, 30))+
+                     labels = c("Baseline", "Synchronised MDA", "10-day MDA", "20-day MDA"),
+                     name = "Time to complete MDA") +
+  theme(legend.position = c(0.45, 0.2))+
+  coord_cartesian(xlim = c(-0.25,1), ylim = c(-15, 70))+
   xlab("Years since intervention started")+
   ylab("All-age slide prevalence (%)") +
-  geom_segment(x = 0, y = max_prev+5, xend = 0, yend =max_prev, arrow = arrow(length = unit(0.3, "cm")),
+  geom_segment(x = 0, y = max_prev+10, xend = 0, yend =max_prev, arrow = arrow(length = unit(0.3, "cm")),
                col = "black", size = 1.1)+
-  geom_segment(x = second_mda/365, y = max_prev+5, xend = second_mda/365, yend =max_prev, arrow = arrow(length = unit(0.3, "cm")),
+  geom_segment(x = second_mda/365, y = max_prev+10, xend = second_mda/365, yend =max_prev, arrow = arrow(length = unit(0.3, "cm")),
                col = "black", size = 1.1)+
-  geom_segment(x = third_mda/365, y = max_prev+5, xend = third_mda/365, yend =max_prev, arrow = arrow(length = unit(0.3, "cm")),
+  geom_segment(x = third_mda/365, y = max_prev+10, xend = third_mda/365, yend =max_prev, arrow = arrow(length = unit(0.3, "cm")),
                col = "black", size = 1.1)+
-  geom_segment(x = plot_matamal/365, y = max_prev+5, xend = plot_matamal/365, yend = max_prev,
+  geom_segment(x = plot_matamal/365, y = max_prev+10, xend = plot_matamal/365, yend = max_prev,
                arrow = arrow(length = unit(0.3, "cm")),
-               col = "blue", size = 1.1)
+               col = "blue", size = 1.1)+
+  annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = max_prev,
+           fill = "white", alpha = 0.1, col = "black")+
+  annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = max_prev,alpha = 0.05)
 
 max_inc <- df_distr %>%
   filter(model_type == "baseline-Sen") %>%
@@ -131,8 +147,8 @@ inc_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = clin_inc0to5*1000, col
   theme_bw(base_size = 14)+
   scale_color_manual(values = distr_pals,
                      breaks = c("baseline-Sen", "all-in-one-stag-Sen", "10d-stagger-Sen", "20d-stagger-Sen"),
-                     labels = c("No intervention", "Synchronised MDA", "10-day MDA", "20-day MDA"),
-                     name = "Scenario") +
+                     labels = c("Baseline", "Synchronised MDA", "10-day MDA", "20-day MDA"),
+                     name = "Time to complete MDA") +
   guides(col = "none")+
 
   ylab("Clinical incidence in children \n under 5-years-old, per 1000 persons")+
@@ -146,9 +162,9 @@ inc_plot <- ggplot(df_distr, aes(x = (t - start)/365, y = clin_inc0to5*1000, col
   geom_segment(x = third_mda/365, y = max_inc+5, xend = third_mda/365, yend =max_inc,
                arrow = arrow(length = unit(0.3, "cm")),
                col = "black", size = 1.1)+
-  #geom_segment(x = plot_matamal/365, y = max_inc+5, xend = plot_matamal/365, yend = max_inc,
-  #             arrow = arrow(length = unit(0.3, "cm")),
-  #             col = "blue", size = 1.1)+
+  geom_segment(x = plot_matamal/365, y = max_inc+5, xend = plot_matamal/365, yend = max_inc,
+               arrow = arrow(length = unit(0.3, "cm")),
+               col = "blue", size = 1.1)+
   annotate("rect", xmin = 0, xmax = plot_bohemia/365, ymin = 0, ymax = max_inc,
            fill = "white", alpha = 0.1, col = "black")+
   annotate("rect", xmin = 0, xmax = 1, fill = "blue", ymin = 0, ymax = max_inc,alpha = 0.05)
@@ -182,13 +198,13 @@ df_distr_wide_setting <- left_join(df_distr_wide_setting_ivm,df_distr_wide_setti
 
 #prevalence
 df_distr_wide_setting_prev_ivm<- df_distr_all %>%
-  dplyr::select(t, ref, init_EIR, model_type, ivm_cov_par, slide_prev0to80) %>%
+  select(t, ref, init_EIR, model_type, ivm_cov_par, slide_prev0to80) %>%
   group_by(ref) %>%
   group_modify(~ {
     df_wide <- .x %>%
       pivot_wider(names_from = model_type, values_from = slide_prev0to80)
   }) %>%
-  dplyr::select(-`baseline-Sen`)
+  select(-`baseline-Sen`)
 
 df_distr_wide_setting_prev_baseline <- df_distr_all %>%
   filter(model_type == "baseline-Sen") %>%
@@ -253,25 +269,29 @@ impact_measurements <- do.call("rbind", list(impact_overall, impact_bohemia, imp
 impact_measurements_long <- impact_measurements %>%
   pivot_longer(cols = c(impact_all_in_stag, impact_20d, impact_10d), names_to = "intervention", values_to = "impact")
 
-impact_measurements_long$intervention <- factor(impact_measurements_long$intervention, levels = c("impact_all_in_stag", "impact_10d", "impact_20d"))
-
 levels_x <- unique(impact_measurements_long$scenario)
 
-distr_pals <- c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')
 
+unique(impact_measurements_long$intervention)
+
+impact_measurements_long$intervention <- factor(impact_measurements_long$intervention, levels = c("impact_all_in_stag",
+                                                                                                  "impact_10d",
+                                                                                                  "impact_20d"))
 
 cov_error <- impact_measurements_long %>%
   ungroup() %>%
   select(-ref) %>%
-  filter(init_EIR == 2 & ivm_cov_par %in% c(0.5, 0.9)) %>%
+  filter(init_EIR == 100 & ivm_cov_par %in% c(0.5, 0.9)) %>%
   pivot_wider(names_from = ivm_cov_par, values_from = impact) %>%
   rename(cov_low_0.5 = `0.5`,
          cov_high_0.9 = `0.9`)
 
+#distr_pals <- c('#a6d854', '#8da0cb', '#66c2a5', '#fc8d62')
+distr_pals2 <- distr_pals[2:4]
 impact_main_plot <- ggplot() +
   # Bars
   geom_bar(
-    data = impact_measurements_long %>% filter(init_EIR == 2 & ivm_cov_par == 0.7),
+    data = impact_measurements_long %>% filter(init_EIR == 100 & ivm_cov_par == 0.7),
     aes(x = factor(scenario), y = impact, fill = as.factor(intervention)),
     stat = "identity",
     position = position_dodge(width = 0.9)
@@ -292,25 +312,45 @@ impact_main_plot <- ggplot() +
   theme_bw(base_size = 14) +
   theme(legend.position = c(0.7, 0.8)) +
   scale_fill_manual(
-    values = c("impact_all_in_stag" = distr_pals[3],
-               "impact_10d" = distr_pals[1],
-               "impact_20d" = distr_pals[2]),
-    breaks = c("impact_all_in_stag", "impact_10d", "impact_20d"),
-    labels = c(
-      "impact_all_in_stag"="Synchronised MDA",
-      "impact_10d"="10 days to complete MDA",
-      "impact_20d"="20 days to complete MDA"
-    ),
-    name = "Scenario"
-  )+
+    values = distr_pals2, name = "Scenario" #,
+    #labels = c(
+    #  "10 days to complete monthly MDA",
+    #  "20 days to complete monthly MDA",
+    #  "1 day to complete monthyl MDA (original model)",
+    #  "1 day to complete monthly MDA (staggered model)"
+    #)
+  ) +
   xlab("Time of measurement") +
   guides(fill = "none")+
   ylab("Efficacy (%)") +
   scale_x_discrete(labels = c(
     "bohemia" = "Incidence U5s (start to 6m later)",
-    "matamal" = "Prevalence U5s (1m after last MDA)",
+    "matamal" = "All-age prevalence (1m after last MDA)",
     "Once year since start" = "Incidence U5s (start to 1y later)"
-  ))
+  ))+
+  guides(fill = "none")
+
+impact_measurements_long2 <- impact_measurements_long
+impact_measurements_long2$intervention <- factor(impact_measurements_long2$intervention,
+                                                 levels = c("impact_all_in_stag",
+                                                            "impact_10d",
+                                                            "impact_20d"))
+cov_error2 <- cov_error
+cov_error2$intervention <- factor(cov_error2$intervention,
+                                                 levels = c("impact_all_in_stag",
+                                                            "impact_10d",
+                                                            "impact_20d"))
+
+saveRDS(cov_error2, file = "2.ivm-prolonged-distr/output/impact_seasonal_covs_error.rds")
+
+
+distr_pals <- c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')
+#distr_pals2 <- distr_pals[1:4]
+
+impact_measurements_long2 <- impact_measurements_long2 %>%
+  mutate(seasonality = "seasonal-on-time")
+
+saveRDS(impact_measurements_long2, file = "2.ivm-prolonged-distr/output/impact_seasonal_on_time.rds")
 
 
 dynamics_seasonal <- cowplot::plot_grid(mv_plot, eir_plot, prev_plot, inc_plot,
@@ -320,22 +360,38 @@ dynamics_seasonal <- cowplot::plot_grid(mv_plot, eir_plot, prev_plot, inc_plot,
 
 
 output_stats <- impact_measurements_long %>%
-  filter(init_EIR == 2 & ivm_cov_par == 0.7) %>%
+  filter(init_EIR == 100 & ivm_cov_par == 0.7) %>%
   group_by(scenario) %>%
   summarise(mean_impact = mean(impact, na.rm = TRUE))
 
+#when late for 1y since start, mean impact is 26.2% when distr is late
 
+((output_stats[1,2] - 26.2)/output_stats[1,2])*100
+#across distribution strategies, for on-time int is approx 48% more efficacious than late int
 
 impact_measurements_long %>%
   filter(init_EIR == 100 & ivm_cov_par == 0.7 & scenario == "Once year since start")%>%
   group_by(scenario, intervention)
 
+# all-in:56.6
 cov_error %>%
   filter(init_EIR == 100 & scenario == "Once year since start" )  # all-in 49.5-60.9
+#20d 59.6-73.6
 
 
 plot_seasonal <- cowplot::plot_grid(dynamics_seasonal, impact_main_plot,
                                     labels = c("", "E"))
 
 
-ggsave(plot_seasonal, file = "2.ivm-prolonged-distr/plots/sm_fig_6_plot_seasonal_low_EIR.png")
+#ggsave(plot_seasonal, file = "2.ivm-prolonged-distr/plots/fig_4_plot_seasonal.pdf")
+#ggsave(plot_seasonal, file = "2.ivm-prolonged-distr/plots/fig_4_plot_seasonal.png")
+
+
+#reporting stats in manuscript
+impact_measurements_long %>%
+  filter(init_EIR == 100 & ivm_cov_par == 0.7 & scenario == "Once year since start")%>%
+  group_by(scenario, intervention)
+
+
+cov_error %>%
+  filter(init_EIR == 100 & scenario == "Once year since start" )  # all-in 13.9-16.8
